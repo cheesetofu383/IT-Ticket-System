@@ -1,0 +1,85 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+.login-container {
+    width: 400px;
+    margin: 120px auto;
+    padding: 40px;
+    background-color: white;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1 {
+    margin-bottom: 10px;
+}
+
+.login-container h2 {
+    margin-bottom: 30px;
+    font-weight: normal;
+}
+
+.role-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.role-buttons button {
+    background-color: #2563eb;
+    color: white;
+}
+
+.role-buttons button:hover {
+    background-color: #1d4ed8;
+}
+
+.panel-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.panel-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.panel-buttons button {
+    background-color: #2563eb;
+    color: white;
+}
+
+.panel-buttons button:hover {
+    background-color: #1d4ed8;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
