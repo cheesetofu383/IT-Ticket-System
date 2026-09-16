@@ -475,7 +475,11 @@
     ========================= -->
 
     <script>
+        const customer = localStorage.getItem("customer");
 
+        if (!customer) {
+            window.location.href = "/customer-login.html";
+            }
         async function loadTickets() {
 
             try {

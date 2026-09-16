@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ticket Details - IT Support</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 70px;
+
+            background: white;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 50px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+
+            color: #1769aa;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+
+            color: #4b5563;
+
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            color: #1769aa;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            max-width: 1100px;
+
+            margin: 45px auto;
+
+            padding: 0 25px;
+        }
+
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-link {
+            display: inline-block;
+
+            margin-bottom: 20px;
+
+            color: #1769aa;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .ticket-header {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.06);
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 20px;
+        }
+
+        .ticket-header h1 {
+            font-size: 27px;
+
+            margin-bottom: 8px;
+        }
+
+        .ticket-id {
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+
+            padding: 8px 14px;
+
+            border-radius: 20px;
+
+            background: #eef6fc;
+
+            color: #1769aa;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .content-grid {
+            display: grid;
+
+            grid-template-columns:
+                2fr 1fr;
+
+            gap: 25px;
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.06);
+
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* =========================
+           INFORMATION
+        ========================= */
+
+        .info-row {
+            display: grid;
+
+            grid-template-columns: 160px 1fr;
+
+            gap: 15px;
+
+            padding: 15px 0;
+
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6b7280;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+        .info-value {
+            font-size: 14px;
+
+            color: #374151;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            outline: none;
+        }
+
+        select:focus,
+        textarea:focus {
+            border-color: #1769aa;
+        }
+
+        textarea {
+            min-height: 120px;
+
+            resize: vertical;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button-group {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .button {
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 12px 18px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .save-button {
+            background: #1769aa;
+
+            color: white;
+        }
+
+        .save-button:hover {
+            background: #12578c;
+        }
+
+        .close-button {
+            background: #e5e7eb;
+
+            color: #374151;
+        }
+
+        .close-button:hover {
+            background: #d1d5db;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-header {
+                flex-direction: column;
+            }
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .container {
+                margin: 30px auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            IT Support
+        </div>
+
+
+        <div class="nav-right">
+
+            <a
+                href="/staff.html"
+                class="nav-link"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="/staff-profile.html"
+                class="nav-link"
+            >
+                Staff Profile
+            </a>
+
+            <a
+                href="/"
+                class="nav-link"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="container">
+
+
+        <a
+            href="/staff.html"
+            class="back-link"
+        >
+            ← Back to Dashboard
+        </a>
+
+
+
+        <!-- =========================
+             TICKET HEADER
+        ========================= -->
+
+        <section class="ticket-header">
+
+            <div>
+
+                <h1>
+                    Ticket Details
+                </h1>
+
+                <div
+                    class="ticket-id"
+                    id="ticketId"
+                >
+                    Ticket ID
+                </div>
+
+            </div>
+
+
+            <div
+                class="status"
+                id="ticketStatus"
+            >
+                Open
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             CONTENT
+        ========================= -->
+
+        <div class="content-grid">
+
+
+            <!-- =========================
+                 LEFT SIDE
+            ========================= -->
+
+            <div>
+
+
+                <!-- CUSTOMER INFORMATION -->
+
+                <section class="card">
+
+                    <h2>
+                        Customer Information
+                    </h2>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Customer ID
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="customerId"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Customer Name
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="customerName"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Email
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="customerEmail"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ISSUE INFORMATION -->
+
+                <section class="card">
+
+                    <h2>
+                        Ticket Information
+                    </h2>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Issue
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="issue"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Support Type
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="supportType"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Appointment Date
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="appointmentDate"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Appointment Time
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="appointmentTime"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Created Date
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="createdDate"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 RIGHT SIDE
+            ========================= -->
+
+            <div>
+
+
+                <!-- UPDATE TICKET -->
+
+                <section class="card">
+
+                    <h2>
+                        Manage Ticket
+                    </h2>
+
+
+                    <div class="form-group">
+
+                        <label for="assignedEngineer">
+                            Assigned Engineer
+                        </label>
+
+                        <select id="assignedEngineer">
+                        <option value="">Unassigned</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select id="status">
+
+                            <option value="Open">
+                                Open
+                            </option>
+
+                            <option value="In Progress">
+                                In Progress
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Closed">
+                                Closed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="appointmentStatus">
+                            Appointment Status
+                        </label>
+
+                        <select id="appointmentStatus">
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Confirmed">
+                                Confirmed
+                            </option>
+
+                            <option value="Reschedule Required">
+                                Reschedule Required
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="serviceResult">
+                            Service Result
+                        </label>
+
+                        <textarea
+                            id="serviceResult"
+                            placeholder="Enter the result of the service..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="button-group">
+
+                        <button
+                            class="button save-button"
+                            type="button"
+                            onclick="saveChanges()"
+>
+                        Save Changes
+                        </button>
+
+                        <button
+                            class="button close-button"
+                            type="button"
+                        >
+                            Close Ticket
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+    <script>
+        async function loadStaff() {
+
+    try {
+
+        const response = await fetch("/api/staff");
+
+        const staffList = await response.json();
+
+        const dropdown = document.getElementById("assignedEngineer");
+
+        // Keep the Unassigned option
+        dropdown.innerHTML = '<option value="">Unassigned</option>';
+
+        // Add each staff member from Excel
+        staffList.forEach(staff => {
+
+            const option = document.createElement("option");
+
+            option.value = staff.name;
+            option.textContent = staff.name;
+
+            dropdown.appendChild(option);
+
+        });
+
+    } catch (error) {
+
+        console.error("Unable to load staff:", error);
+
+    }
+
+}
+        async function loadTicket() {
+
+            // Get Ticket ID from the URL
+            const params = new URLSearchParams(window.location.search);
+            const ticketId = params.get("ticketId");
+
+
+            if (!ticketId) {
+
+                alert("Ticket ID not found.");
+
+                return;
+
+            }
+
+
+            try {
+
+                // Get the ticket from the server
+                const response = await fetch(
+                    "/api/tickets/" + encodeURIComponent(ticketId)
+                );
+
+                const ticket = await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(ticket.message);
+
+                    return;
+
+                }
+
+
+                // =========================
+                // DISPLAY TICKET DETAILS
+                // =========================
+
+                document.getElementById("ticketId").textContent =
+                    ticket["Ticket ID"];
+
+                document.getElementById("ticketStatus").textContent =
+                    ticket["Status"];
+
+
+                // Customer Information
+
+                document.getElementById("customerId").textContent =
+                    ticket["Customer ID"] || "-";
+
+                document.getElementById("customerName").textContent =
+                    ticket["Customer Name"] || "-";
+
+                document.getElementById("customerEmail").textContent =
+                    ticket["Email"] || "-";
+
+
+                // Ticket Information
+
+                document.getElementById("issue").textContent =
+                    ticket["Issue"] || "-";
+
+                document.getElementById("supportType").textContent =
+                    ticket["Support Type"] || "-";
+
+                document.getElementById("appointmentDate").textContent =
+                    ticket["Appointment Date"] || "-";
+
+                document.getElementById("appointmentTime").textContent =
+                    ticket["Appointment Time"] || "-";
+
+                document.getElementById("createdDate").textContent =
+                    ticket["Created Date"] || "-";
+
+
+                // =========================
+                // MANAGE TICKET
+                // =========================
+
+                document.getElementById("assignedEngineer").value =
+                    ticket["Assigned Engineer"] || "";
+
+                document.getElementById("status").value =
+                    ticket["Status"] || "Open";
+
+                document.getElementById("appointmentStatus").value =
+                    ticket["Appointment Status"] || "Pending";
+
+                document.getElementById("serviceResult").value =
+                    ticket["Service Result"] || "";
+
+
+                console.log("Ticket loaded:", ticket);
+
+
+            } catch (error) {
+
+                console.error("Unable to load ticket:", error);
+
+                alert("Unable to load ticket.");
+
+            }
+
+        }
+
+
+        // =========================
+        // SAVE CHANGES
+        // =========================
+
+        async function saveChanges() {
+
+            const params = new URLSearchParams(window.location.search);
+            const ticketId = params.get("ticketId");
+
+
+            if (!ticketId) {
+
+                alert("Ticket ID not found.");
+
+                return;
+
+            }
+
+
+            const assignedEngineer =
+                document.getElementById("assignedEngineer").value;
+
+            const status =
+                document.getElementById("status").value;
+
+            const appointmentStatus =
+                document.getElementById("appointmentStatus").value;
+
+            const serviceResult =
+                document.getElementById("serviceResult").value;
+
+
+            try {
+
+                const response = await fetch(
+                    "/api/tickets/" + encodeURIComponent(ticketId),
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            assignedEngineer:
+                                assignedEngineer,
+
+                            status:
+                                status,
+
+                            appointmentStatus:
+                                appointmentStatus,
+
+                            serviceResult:
+                                serviceResult
+
+                        })
+                    }
+                );
+
+
+                const data = await response.json();
+
+
+                if (response.ok) {
+
+                    alert("Ticket updated successfully!");
+
+                    // Update the status shown at the top
+                    document.getElementById("ticketStatus").textContent =
+                        status;
+
+                } else {
+
+                    alert(data.message);
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to save ticket:",
+                    error
+                );
+
+                alert("Unable to save ticket.");
+
+            }
+
+        }
+
+
+        // Load the ticket when the page opens
+        loadTicket();
+        loadStaff();
+
+    </script>
+
+</body>
+</html>
+
+</body>
+</html>
+
+
+</body>
+
+</html>
