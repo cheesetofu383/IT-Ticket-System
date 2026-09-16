@@ -260,6 +260,97 @@ app.get("/api/tickets/:ticketId", (req, res) => {
 });
 
 /* UPDATE TICKET */
+/* SUBMIT SEPARATE SERVICE REPORT */
+app.post("/api/tickets/:ticketId/service-report", (req, res) => {
+  const ticketId = req.params.ticketId;
+  const { onsite, engineer, date, signInTime, signOutTime, tasksDone, resolution } = req.body;
+
+  const workbook = XLSX.readFile(excelFile);
+
+  // 1. Get or initialize the ServiceReport sheet
+  let reportsData = [];
+  if (workbook.Sheets["ServiceReport"]) {
+    reportsData = XLSX.utils.sheet_to_json(workbook.Sheets["ServiceReport"]);
+  }
+
+  // 2. Locate the ticket to copy customer details and update its status
+  const ticketSheet = workbook.Sheets["Ticket"];
+  const ticketsData = XLSX.utils.sheet_to_json(ticketSheet);
+  const ticketIndex = ticketsData.findIndex((t) => t["Ticket ID"] === ticketId);
+
+  if (ticketIndex === -1) {
+    return res.status(404).json({ message: "Ticket not found." });
+  }
+
+  const ticket = ticketsData[ticketIndex];
+
+  // 3. Compute duration for record-keeping
+  let hoursSpent = 0;
+  if (signInTime && signOutTime) {
+    const start = new Date(`1970-01-01T${signInTime}:00`);
+    const end = new Date(`1970-01-01T${signOutTime}:00`);
+    const diffMs = end - start;
+    if (diffMs > 0) {
+      hoursSpent = +(diffMs / (1000 * 60 * 60)).toFixed(2);
+    }
+  }
+
+  // 4. Create new report record
+  const newReport = {
+    "Report ID": "SR-" + Date.now(),
+    "Ticket ID": ticket["Ticket ID"],
+    "Customer ID": ticket["Customer ID"] || "",
+    "Customer Name": ticket["Customer Name"] || "",
+    "Engineer": engineer || ticket["Assigned Engineer"] || "",
+    "Onsite": onsite ? "Yes" : "No",
+    "Date": date || new Date().toISOString().split("T")[0],
+    "SignInTime": signInTime || "",
+    "SignOutTime": signOutTime || "",
+    "HoursSpent": hoursSpent,
+    "TasksDone": tasksDone || "",
+    "Resolution": resolution || "",
+    "Created At": new Date().toISOString()
+  };
+
+  reportsData.push(newReport);
+
+  // 5. Update ticket status to Closed & record resolution outcome
+  ticketsData[ticketIndex]["Status"] = "Closed";
+  ticketsData[ticketIndex]["Service Result"] = resolution || "";
+  if (engineer) {
+    ticketsData[ticketIndex]["Assigned Engineer"] = engineer;
+  }
+
+  // 6. Save back to workbook
+  workbook.Sheets["ServiceReport"] = XLSX.utils.json_to_sheet(reportsData);
+  workbook.Sheets["Ticket"] = XLSX.utils.json_to_sheet(ticketsData);
+  XLSX.writeFile(workbook, excelFile);
+
+  res.status(201).json({
+    message: "Service report generated and saved successfully.",
+    report: newReport
+  });
+});
+
+/* GET SERVICE REPORT(S) FOR A TICKET */
+app.get("/api/tickets/:ticketId/service-reports", (req, res) => {
+  const ticketId = req.params.ticketId;
+  const workbook = XLSX.readFile(excelFile);
+
+  // Return an empty list if the sheet hasn't been created yet
+  if (!workbook.Sheets["ServiceReport"]) {
+    return res.json([]);
+  }
+
+  const reportsData = XLSX.utils.sheet_to_json(workbook.Sheets["ServiceReport"]);
+
+  // Filter all reports matching the given Ticket ID
+  const ticketReports = reportsData.filter(
+    (report) => report["Ticket ID"] === ticketId
+  );
+
+  res.json(ticketReports);
+});
 
 app.put("/api/tickets/:ticketId", (req, res) => {
 
