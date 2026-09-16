@@ -392,67 +392,40 @@
 
                 <div id="appointmentSection">
 
-                    <div class="section-title" style="margin-top: 15px;">
-                        Appointment Details
-                    </div>
+    <label for="appointmentDate">
+        Appointment Date
+    </label>
 
+    <input
+        type="date"
+        id="appointmentDate"
+        required
+    >
 
-                    <div class="form-row">
+    <label for="appointmentTime">
+        Start Time
+    </label>
 
-                        <div class="form-group">
+    <input
+        type="time"
+        id="appointmentTime"
+        required
+    >
 
-                            <label for="appointmentDate">
-                                Preferred Date <span class="required">*</span>
-                            </label>
+    <label for="appointmentDuration">
+    Duration (hours)
+</label>
 
-                            <input
-                                type="date"
-                                id="appointmentDate"
-                            >
+<input
+    type="number"
+    id="appointmentDuration"
+    min="1"
+    step="1"
+    placeholder="Enter number of hours"
+    required
+>
 
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="appointmentTime">
-                                Preferred Time <span class="required">*</span>
-                            </label>
-
-                            <select id="appointmentTime">
-
-                                <option value="">
-                                    Select a time
-                                </option>
-
-                                <option value="9 AM - 11 AM">
-                                    9 AM - 11 AM
-                                </option>
-
-                                <option value="11 AM - 1 PM">
-                                    11 AM - 1 PM
-                                </option>
-
-                                <option value="1 PM - 3 PM">
-                                    1 PM - 3 PM
-                                </option>
-
-                                <option value="3 PM - 5 PM">
-                                    3 PM - 5 PM
-                                </option>
-
-                                <option value="5 PM - 7 PM">
-                                    5 PM - 7 PM
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+</div>
 
                 <!-- BUTTONS -->
 
@@ -522,127 +495,215 @@
 
     supportType.addEventListener("change", function () {
 
-        if (supportType.value === "On-site Support") {
+    if (supportType.value === "On-site Support") {
 
-            appointmentSection.style.display = "block";
+        // Get logged-in customer
+        const customer = JSON.parse(
+            localStorage.getItem("customer")
+        );
 
-            appointmentDate.required = true;
-            appointmentTime.required = true;
+        // Check customer credits
+        const credits = customer?.credits || 0;
 
-        } else {
+        if (credits <= 0) {
 
+            alert(
+                "You do not have enough credits to schedule On-site Support."
+            );
+
+            // Reset support type
+            supportType.value = "";
+
+            // Hide appointment section
             appointmentSection.style.display = "none";
 
             appointmentDate.required = false;
             appointmentTime.required = false;
 
-            appointmentDate.value = "";
-            appointmentTime.value = "";
-
-        }
-
-    });
-
-
-    /* SUBMIT TICKET */
-
-    ticketForm.addEventListener("submit", async function (event) {
-
-        event.preventDefault();
-
-
-        /* MAKE SURE CUSTOMER IS LOGGED IN */
-
-        const customerData = localStorage.getItem("customer");
-
-        if (!customerData) {
-
-            alert("Please log in first.");
-
-            window.location.href = "/customer-login.html";
-
             return;
 
         }
 
-        const customer = JSON.parse(customerData);
+        // Customer has credits
+        appointmentSection.style.display = "block";
+
+        appointmentDate.required = true;
+        appointmentTime.required = true;
+
+    } else {
+
+        appointmentSection.style.display = "none";
+
+        appointmentDate.required = false;
+        appointmentTime.required = false;
+
+        appointmentDate.value = "";
+        appointmentTime.value = "";
+
+    }
+
+});
 
 
-        /* CREATE TICKET */
+    /* SUBMIT TICKET */
+ticketForm.addEventListener("submit", async function (event) {
 
-        const ticket = {
-
-            customerId:
-                customer.customerId,
-
-            customerName:
-                customer.name,
-
-            email:
-                customer.email,
-
-            issue:
-                document.getElementById("issue").value,
-
-            supportType:
-                document.getElementById("supportType").value,
-
-            appointmentDate:
-                document.getElementById("appointmentDate").value,
-
-            appointmentTime:
-                document.getElementById("appointmentTime").value
-
-        };
+    event.preventDefault();
 
 
-        try {
+    /* =========================
+       MAKE SURE CUSTOMER IS LOGGED IN
+    ========================= */
 
-            const response = await fetch("/api/tickets", {
+    const customerData = localStorage.getItem("customer");
 
-                method: "POST",
+    if (!customerData) {
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        alert("Please log in first.");
 
-                body: JSON.stringify(ticket)
+        window.location.href = "/customer-login.html";
 
-            });
+        return;
 
+    }
 
-            const data = await response.json();
-
-
-            if (response.ok) {
-
-                alert(
-                    "Ticket submitted successfully!\n\nTicket ID: "
-                    + data.ticketId
-                );
-
-                window.location.href = "/customer.html";
-
-            } else {
-
-                alert(
-                    data.message || "Failed to submit ticket."
-                );
-
-            }
+    const customer = JSON.parse(customerData);
 
 
-        } catch (error) {
+    /* =========================
+       GET FORM VALUES
+    ========================= */
 
-            console.error("Error:", error);
+    const supportType =
+        document.getElementById("supportType").value;
+
+    const appointmentDate =
+        document.getElementById("appointmentDate").value;
+
+    const appointmentTime =
+        document.getElementById("appointmentTime").value;
+
+    const appointmentDuration =
+        Number(
+            document.getElementById("appointmentDuration").value
+        );
+
+
+    /* =========================
+       CHECK CREDITS
+    ========================= */
+
+    const credits = Number(customer.credits || 0);
+
+    if (
+        supportType === "On-site Support" &&
+        credits < appointmentDuration
+    ) {
+
+        alert(
+            "You only have " +
+            credits +
+            " credit(s), but you requested " +
+            appointmentDuration +
+            " hour(s)."
+        );
+
+        return;
+
+    }
+
+
+    /* =========================
+       CREATE TICKET
+    ========================= */
+
+    const ticket = {
+
+        customerId:
+            customer.customerId,
+
+        customerName:
+            customer.name,
+
+        email:
+            customer.email,
+
+        issue:
+            document.getElementById("issue").value,
+
+        supportType:
+            supportType,
+
+        appointmentDate:
+            supportType === "On-site Support"
+                ? appointmentDate
+                : null,
+
+        appointmentTime:
+            supportType === "On-site Support"
+                ? appointmentTime
+                : null,
+
+        appointmentDuration:
+            supportType === "On-site Support"
+                ? appointmentDuration
+                : null
+
+    };
+
+
+    /* =========================
+       SEND TICKET TO SERVER
+    ========================= */
+
+    try {
+
+        const response = await fetch("/api/tickets", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(ticket)
+
+        });
+
+
+        const data = await response.json();
+
+
+        if (response.ok) {
 
             alert(
-                "Unable to submit the ticket. Please try again."
+                "Ticket submitted successfully!\n\nTicket ID: "
+                + data.ticketId
+            );
+
+            window.location.href = "/customer.html";
+
+        } else {
+
+            alert(
+                data.message ||
+                "Failed to submit ticket."
             );
 
         }
 
-    });
+
+    } catch (error) {
+
+        console.error("Error:", error);
+
+        alert(
+            "Unable to submit the ticket. Please try again."
+        );
+
+    }
+
+});
 
 </script>
 

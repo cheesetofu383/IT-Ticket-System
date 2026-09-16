@@ -183,7 +183,8 @@ res.json({
     customer: {
         customerId: customer["Customer ID"],
         name: customer.Name,
-        email: customer.Email
+        email: customer.Email,
+        credits: customer["Credits"] || 0
     }
 });
 
@@ -256,6 +257,59 @@ app.get("/api/tickets/:ticketId", (req, res) => {
     }
 
     res.json(ticket);
+
+});
+
+/* DELETE TICKET */
+
+app.delete("/api/tickets/:ticketId", (req, res) => {
+
+    const ticketId = req.params.ticketId;
+
+    const workbook = XLSX.readFile(excelFile);
+
+    const worksheet = workbook.Sheets["Ticket"];
+
+    const ticketsData = XLSX.utils.sheet_to_json(worksheet);
+
+
+    // Find the ticket
+    const ticketIndex = ticketsData.findIndex(
+        ticket => ticket["Ticket ID"] === ticketId
+    );
+
+
+    // Ticket not found
+    if (ticketIndex === -1) {
+
+        return res.status(404).json({
+            message: "Ticket not found."
+        });
+
+    }
+
+
+    // Remove the ticket
+    ticketsData.splice(ticketIndex, 1);
+
+
+    // Convert updated data back to Excel
+    const newWorksheet =
+        XLSX.utils.json_to_sheet(ticketsData);
+
+    workbook.Sheets["Ticket"] = newWorksheet;
+
+
+    // Save Excel file
+    XLSX.writeFile(workbook, excelFile);
+
+
+    console.log("Ticket deleted:", ticketId);
+
+
+    res.json({
+        message: "Ticket deleted successfully."
+    });
 
 });
 
@@ -343,6 +397,8 @@ app.get("/api/staff", (req, res) => {
     res.json(staffList);
 
 });
+
+
 
 app.listen(PORT, "0.0.0.0", () => {
 
