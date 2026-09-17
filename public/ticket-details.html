@@ -717,6 +717,15 @@
         Save Changes 
     </button>
 
+    <button
+            class="button"
+            type="button"
+            style="background: #0284c7; color: white;"
+            onclick="viewSavedReport()"
+    > 
+            View Service Report
+    </button>
+
     <button 
         class="button delete-button" 
         type="button" 
@@ -735,7 +744,37 @@
 
         </div>
 
+<!-- REPORT PREVIEW & PRINT MODAL -->
+    <!-- REPORT PREVIEW & PRINT MODAL -->
+<div class="modal" id="reportModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 20px; z-index: 1000;">
+    <div style="background: white; max-width: 650px; width: 100%; border-radius: 12px; padding: 30px; max-height: 90vh; overflow-y: auto;">
+        <div id="printableReport">
+            <h2 style="color: #1769aa; margin-bottom: 5px;">SERVICE REPORT</h2>
+            <p style="color: #6b7280; font-size: 13px; margin-bottom: 15px;">IT Support Resolution Summary</p>
+            <table style="width: 100%; border-collapse: collapse;">
+                <!-- TICKET DETAILS -->
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; width: 35%;">Ticket ID:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTicketId"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Customer Name:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repCustomer"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Customer Email:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repEmail"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Reported Issue:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repIssue"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Support Type:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repSupportType"></td></tr>
 
+                <!-- SERVICE LOG DETAILS -->
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Assigned Engineer:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repEngineer"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Support Mode:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repOnsite"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Service Date:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repDate"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Time Log:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTime"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #1769aa;">Hours Spent:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repHours"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Tasks Done:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTasks"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Resolution:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repResolution"></td></tr>
+            </table>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" class="button" style="background: #1769aa; color: white;" onclick="window.print()">Print / Save PDF</button>
+            <button type="button" class="button" style="background: #e5e7eb; color: #374151;" onclick="document.getElementById('reportModal').style.display='none'">Close</button>
+        </div>
+    </div>
+</div>
     </main>
 
     <script>
@@ -771,6 +810,50 @@
     }
 
 }
+
+
+        // =========================
+        // VIEW SAVED SERVICE REPORT
+        // =========================
+        async function viewSavedReport() {
+            const params = new URLSearchParams(window.location.search);
+            const ticketId = params.get("ticketId");
+
+            if (!ticketId) {
+                alert("Ticket ID not found.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/tickets/${encodeURIComponent(ticketId)}/service-reports`);
+                const reports = await res.json();
+
+                if (!reports || reports.length === 0) {
+                    alert("No service report has been created for this ticket yet.");
+                    return;
+                }
+
+                // Pick the most recently created report
+                const report = reports[reports.length - 1];
+
+                document.getElementById("repTicketId").textContent = report["Ticket ID"] || "-";
+                document.getElementById("repCustomer").textContent = `${report["Customer Name"] || ""} (${report["Customer ID"] || ""})`;
+                document.getElementById("repEngineer").textContent = report["Engineer"] || "-";
+                document.getElementById("repOnsite").textContent = report["Onsite"] === "Yes" ? "On-site Support" : "Remote / Off-site";
+                document.getElementById("repDate").textContent = report["Date"] || "-";
+                document.getElementById("repTime").textContent = `${report["SignInTime"] || "-"} to ${report["SignOutTime"] || "-"}`;
+                document.getElementById("repHours").textContent = `${report["HoursSpent"] || 0} Hours`;
+                document.getElementById("repTasks").textContent = report["TasksDone"] || "-";
+                document.getElementById("repResolution").textContent = report["Resolution"] || "-";
+
+                // Open the modal
+                document.getElementById("reportModal").style.display = "flex";
+
+            } catch (err) {
+                console.error("Failed to load report:", err);
+                alert("Error loading service report.");
+            }
+        }
         async function loadTicket() {
 
             // Get Ticket ID from the URL
