@@ -24,47 +24,299 @@ res.sendFile(path.join(__dirname, "public", "index.html"));
 
 app.post("/api/tickets", (req, res) => {
 
+    const workbook = XLSX.readFile(excelFile);
 
-const workbook = XLSX.readFile(excelFile);
 
-const worksheet = workbook.Sheets["Ticket"];
+    /* =========================
+       GET CUSTOMER DATA
+    ========================= */
 
-const ticketsData = XLSX.utils.sheet_to_json(worksheet);
+    const customerWorksheet =
+        workbook.Sheets["Customer"];
 
-const ticket = {
-    "Ticket ID": "T-" + Date.now(),
-    "Customer ID": req.body.customerId || "",
-    "Customer Name": req.body.customerName,
-    "Email": req.body.email,
-    "Issue": req.body.issue,
-    "Support Type": req.body.supportType,
-    "Status": "Open",
-    "Assigned Engineer": "",
-    "Appointment Date": req.body.appointmentDate || "",
-    "Appointment Time": req.body.appointmentTime || "",
-    "Appointment Status": "Pending",
-    "Created Date": new Date().toISOString(),
-    "Service Result": ""
-};
+    const customersData =
+        XLSX.utils.sheet_to_json(customerWorksheet);
 
-ticketsData.push(ticket);
 
-const newWorksheet =
-    XLSX.utils.json_to_sheet(ticketsData);
+    /* =========================
+       FIND CUSTOMER
+    ========================= */
 
-workbook.Sheets["Ticket"] = newWorksheet;
+    const customerIndex =
+        customersData.findIndex(
+            customer =>
+                customer["Customer ID"] ===
+                req.body.customerId
+        );
 
-XLSX.writeFile(workbook, excelFile);
 
-console.log("New ticket saved to Excel:", ticket);
+    if (customerIndex === -1) {
 
-res.status(201).json({
-    message: "Ticket created successfully",
-    ticketId: ticket["Ticket ID"]
+        return res.status(404).json({
+            message: "Customer not found."
+        });
+
+    }
+
+
+    const customer =
+        customersData[customerIndex];
+
+
+    /* =========================
+       GET APPOINTMENT DURATION
+    ========================= */
+
+    let appointmentDuration = null;
+
+
+    if (req.body.supportType === "On-site Support") {
+
+        appointmentDuration =
+            parseFloat(
+                req.body.appointmentDuration
+            );
+
+
+        /* =========================
+           CHECK DURATION
+        ========================= */
+
+        if (
+            !Number.isFinite(appointmentDuration) ||
+            appointmentDuration < 2
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "On-site Support requires a minimum duration of 2 hours."
+
+            });
+
+        }
+
+
+        /* =========================
+           CHECK 0.5 HOUR INCREMENTS
+        ========================= */
+
+        if (
+            !Number.isInteger(
+                appointmentDuration * 2
+            )
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Appointment duration must be in 0.5-hour increments."
+
+            });
+
+        }
+
+    }
+
+
+    /* =========================
+       GET CUSTOMER CREDITS
+    ========================= */
+
+    const currentCredits =
+        Number(
+            customer["Credits"] || 0
+        );
+
+
+    /* =========================
+       CHECK CREDITS
+    ========================= */
+
+    if (
+        req.body.supportType === "On-site Support" &&
+        currentCredits < appointmentDuration
+    ) {
+
+        return res.status(400).json({
+
+            message:
+                "You only have " +
+                currentCredits +
+                " credit(s), but you requested " +
+                appointmentDuration +
+                " hour(s)."
+
+        });
+
+    }
+
+
+    /* =========================
+       DEDUCT CREDITS
+    ========================= */
+
+    let remainingCredits =
+        currentCredits;
+
+
+    if (
+        req.body.supportType ===
+        "On-site Support"
+    ) {
+
+        remainingCredits =
+            currentCredits -
+            appointmentDuration;
+
+
+        customersData[customerIndex]["Credits"] =
+            remainingCredits;
+
+    }
+
+
+    /* =========================
+       SAVE CUSTOMER SHEET
+    ========================= */
+
+    workbook.Sheets["Customer"] =
+        XLSX.utils.json_to_sheet(
+            customersData
+        );
+
+
+    /* =========================
+       GET TICKET DATA
+    ========================= */
+
+    const ticketWorksheet =
+        workbook.Sheets["Ticket"];
+
+    const ticketsData =
+        XLSX.utils.sheet_to_json(
+            ticketWorksheet
+        );
+
+
+    /* =========================
+       CREATE TICKET
+    ========================= */
+
+    const ticket = {
+
+        "Ticket ID":
+            "T-" + Date.now(),
+
+        "Customer ID":
+            req.body.customerId || "",
+
+        "Customer Name":
+            req.body.customerName,
+
+        "Email":
+            req.body.email,
+
+        "Issue":
+            req.body.issue,
+
+        "Support Type":
+            req.body.supportType,
+
+        "Status":
+            "Open",
+
+        "Assigned Engineer":
+            "",
+
+        "Appointment Date":
+            req.body.supportType ===
+            "On-site Support"
+                ? req.body.appointmentDate
+                : "",
+
+        "Appointment Time":
+            req.body.supportType ===
+            "On-site Support"
+                ? req.body.appointmentTime
+                : "",
+
+        "Appointment Duration":
+            appointmentDuration,
+
+        "Appointment Status":
+            "Pending",
+
+        "Created Date":
+            new Date().toISOString(),
+
+        "Service Result":
+            ""
+
+    };
+
+
+    /* =========================
+       ADD TICKET
+    ========================= */
+
+    ticketsData.push(ticket);
+
+
+    /* =========================
+       SAVE TICKET SHEET
+    ========================= */
+
+    workbook.Sheets["Ticket"] =
+        XLSX.utils.json_to_sheet(
+            ticketsData
+        );
+
+
+    /* =========================
+       SAVE EXCEL FILE
+    ========================= */
+
+    XLSX.writeFile(
+        workbook,
+        excelFile
+    );
+
+
+    console.log(
+        "New ticket saved to Excel:",
+        ticket
+    );
+
+
+    console.log(
+        "Customer credits:",
+        currentCredits,
+        "->",
+        remainingCredits
+    );
+
+
+    /* =========================
+       SEND RESPONSE
+    ========================= */
+
+    res.status(201).json({
+
+        message:
+            "Ticket created successfully",
+
+        ticketId:
+            ticket["Ticket ID"],
+
+        remainingCredits:
+            remainingCredits
+
+    });
+
 });
 
 
-});
 
 /* GET TICKETS */
 
