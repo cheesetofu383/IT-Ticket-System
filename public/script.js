@@ -854,10 +854,12 @@ async function loadTicketDetails() {
             supportTypeValue
         );
 
-        toggleOnSiteTicketFields(
+        const isOnSiteTicket =
             String(supportTypeValue).trim().toLowerCase() ===
-            "on-site support"
-        );
+            "on-site support";
+
+        toggleOnSiteTicketFields(isOnSiteTicket);
+        updateAssignedRoleLabel(supportTypeValue);
 
         setField(
             "appointmentDate",
@@ -1008,6 +1010,9 @@ async function viewSavedReport() {
         const repEngineer =
             document.getElementById("repEngineer");
 
+        const repEngineerLabel =
+            document.getElementById("repEngineerLabel");
+
         const repOnsite =
             document.getElementById("repOnsite");
 
@@ -1049,6 +1054,13 @@ async function viewSavedReport() {
         if (repSupportType) {
             repSupportType.textContent =
                 report["Support Type"] || report.supportType || "-";
+        }
+
+        if (repEngineerLabel) {
+            repEngineerLabel.textContent =
+                getAssignmentRoleLabel(
+                    report["Support Type"] || report.supportType || ""
+                );
         }
 
         if (repEngineer) {
@@ -1234,6 +1246,37 @@ function setField(id, value) {
         element.textContent =
             value ?? "";
 
+    }
+
+}
+
+
+function getAssignmentRoleLabel(supportTypeValue) {
+
+    return String(supportTypeValue || "").trim().toLowerCase() ===
+        "on-site support"
+        ? "Assigned Technician"
+        : "Assigned Engineer";
+
+}
+
+
+function updateAssignedRoleLabel(supportTypeValue) {
+
+    const labelElement =
+        document.getElementById("assignedRoleLabel");
+
+    if (labelElement) {
+        labelElement.textContent =
+            getAssignmentRoleLabel(supportTypeValue);
+    }
+
+    const reportLabelElement =
+        document.getElementById("repEngineerLabel");
+
+    if (reportLabelElement) {
+        reportLabelElement.textContent =
+            getAssignmentRoleLabel(supportTypeValue);
     }
 
 }

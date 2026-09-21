@@ -1450,6 +1450,10 @@ app.get("/api/staff", (req, res) => {
            BE ASSIGNED AS ENGINEERS.
         */
 
+        /*
+           Future-ready hook for technician-only filtering.
+           Do not enable until a real technician role exists in the staff data.
+        */
         const staffList =
             staffData
                 .filter(
