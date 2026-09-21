@@ -105,6 +105,46 @@ const supportTypeSelect =
 const appointmentSection =
     document.getElementById("appointmentSection");
 
+const onSiteSupportTypeSelect =
+    document.getElementById("onSiteSupportType");
+
+const durationField =
+    document.getElementById("durationField");
+
+const appointmentDurationInput =
+    document.getElementById("appointmentDuration");
+
+
+function getOnSiteDurationSettings(onSiteSupportType) {
+
+    switch ((onSiteSupportType || "").trim()) {
+
+        case "Maintenance":
+            return {
+                minHours: 1,
+                label: "Minimum 1 hour"
+            };
+
+        case "TEMP":
+            return {
+                minHours: 2,
+                label: "Minimum 2 hours"
+            };
+
+        case "Project":
+            // TODO: confirm the official project minimum with the supervisor.
+            // This default assumes a minimum of 6 hours until confirmed.
+            return {
+                minHours: 6,
+                label: "Minimum 6 hours"
+            };
+
+        default:
+            return null;
+    }
+
+}
+
 
 /* =========================================================
    SHOW / HIDE APPOINTMENT FIELDS
@@ -117,27 +157,24 @@ if (supportTypeSelect && appointmentSection) {
         const supportType =
             supportTypeSelect.value.trim().toLowerCase();
 
-
-        if (supportType === "on-site support") {
-
-            // Show appointment fields
-            appointmentSection.style.display = "block";
-
-        } else {
-
-            // Hide appointment fields
-            appointmentSection.style.display = "none";
+        const isOnSiteSupport =
+            supportType === "on-site support";
 
 
-            // Clear the fields
+        appointmentSection.style.display =
+            isOnSiteSupport ? "block" : "none";
+
+
+        if (!isOnSiteSupport) {
+
             const appointmentDate =
                 document.getElementById("appointmentDate");
 
             const appointmentTime =
                 document.getElementById("appointmentTime");
 
-            const appointmentDuration =
-                document.getElementById("appointmentDuration");
+            const onSiteType =
+                document.getElementById("onSiteSupportType");
 
 
             if (appointmentDate) {
@@ -148,10 +185,51 @@ if (supportTypeSelect && appointmentSection) {
                 appointmentTime.value = "";
             }
 
-            if (appointmentDuration) {
-                appointmentDuration.value = "";
+            if (onSiteType) {
+                onSiteType.value = "";
             }
 
+            if (appointmentDurationInput) {
+                appointmentDurationInput.value = "";
+                appointmentDurationInput.min = "1";
+                appointmentDurationInput.placeholder =
+                    "Select an on-site support type";
+            }
+
+            if (durationField) {
+                durationField.style.display = "none";
+            }
+
+            return;
+
+        }
+
+
+        const selectedType =
+            onSiteSupportTypeSelect?.value || "";
+
+        const settings =
+            getOnSiteDurationSettings(selectedType);
+
+
+        if (durationField) {
+            durationField.style.display =
+                settings ? "block" : "none";
+        }
+
+
+        if (appointmentDurationInput) {
+            if (settings) {
+                appointmentDurationInput.min =
+                    String(settings.minHours);
+                appointmentDurationInput.placeholder =
+                    settings.label;
+            } else {
+                appointmentDurationInput.value = "";
+                appointmentDurationInput.min = "1";
+                appointmentDurationInput.placeholder =
+                    "Select an on-site support type";
+            }
         }
 
     }
@@ -161,6 +239,13 @@ if (supportTypeSelect && appointmentSection) {
         "change",
         updateAppointmentFields
     );
+
+    if (onSiteSupportTypeSelect) {
+        onSiteSupportTypeSelect.addEventListener(
+            "change",
+            updateAppointmentFields
+        );
+    }
 
 
     // Run when page first loads
@@ -185,6 +270,8 @@ if (ticketForm) {
             const supportType =
                 document.getElementById("supportType")?.value || "";
 
+            const onSiteSupportType =
+                document.getElementById("onSiteSupportType")?.value || "";
 
             const isOnSite =
                 supportType.trim().toLowerCase() ===
@@ -202,6 +289,23 @@ if (ticketForm) {
 
             if (isOnSite) {
 
+                if (!onSiteSupportType) {
+                    alert(
+                        "Please select an on-site support type before submitting the ticket."
+                    );
+                    return;
+                }
+
+                const onSiteSettings =
+                    getOnSiteDurationSettings(onSiteSupportType);
+
+                if (!onSiteSettings) {
+                    alert(
+                        "Please select a valid on-site support type."
+                    );
+                    return;
+                }
+
                 appointmentDate =
                     document.getElementById(
                         "appointmentDate"
@@ -218,6 +322,17 @@ if (ticketForm) {
                     document.getElementById(
                         "appointmentDuration"
                     )?.value || null;
+
+                if (
+                    !appointmentDuration ||
+                    Number(appointmentDuration) <
+                        onSiteSettings.minHours
+                ) {
+                    alert(
+                        `Duration is required for ${onSiteSupportType} and must be at least ${onSiteSettings.minHours} hour(s).`
+                    );
+                    return;
+                }
 
             }
 
@@ -254,6 +369,10 @@ if (ticketForm) {
 
                 supportType:
                     supportType,
+
+
+                onSiteSupportType:
+                    isOnSite ? onSiteSupportType : "",
 
 
                 appointmentDate:
@@ -324,6 +443,22 @@ if (ticketForm) {
 
 
                     ticketForm.reset();
+
+
+                    if (onSiteSupportTypeSelect) {
+                        onSiteSupportTypeSelect.value = "";
+                    }
+
+                    if (appointmentDurationInput) {
+                        appointmentDurationInput.value = "";
+                        appointmentDurationInput.min = "1";
+                        appointmentDurationInput.placeholder =
+                            "Select an on-site support type";
+                    }
+
+                    if (durationField) {
+                        durationField.style.display = "none";
+                    }
 
 
                     // Hide appointment section again

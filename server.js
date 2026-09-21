@@ -659,12 +659,45 @@ app.post("/api/tickets", (req, res) => {
         ========================= */
 
         let appointmentDuration = null;
+        const onSiteSupportType =
+            String(
+                req.body.onSiteSupportType || ""
+            ).trim();
 
 
         if (
             req.body.supportType ===
             "On-site Support"
         ) {
+
+            if (!onSiteSupportType) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Please select an on-site support type."
+
+                });
+
+            }
+
+            let minimumHours = 0;
+
+            if (onSiteSupportType === "Maintenance") {
+                minimumHours = 1;
+            } else if (onSiteSupportType === "TEMP") {
+                minimumHours = 2;
+            } else if (onSiteSupportType === "Project") {
+                // TODO: confirm the official project minimum with the supervisor.
+                minimumHours = 6;
+            } else {
+                return res.status(400).json({
+
+                    message:
+                        "Invalid on-site support type selected."
+
+                });
+            }
 
             appointmentDuration =
                 parseFloat(
@@ -680,13 +713,13 @@ app.post("/api/tickets", (req, res) => {
                 !Number.isFinite(
                     appointmentDuration
                 ) ||
-                appointmentDuration < 2
+                appointmentDuration < minimumHours
             ) {
 
                 return res.status(400).json({
 
                     message:
-                        "On-site Support requires a minimum duration of 2 hours."
+                        `On-site Support (${onSiteSupportType}) requires a minimum duration of ${minimumHours} hour(s).`
 
                 });
 
@@ -842,6 +875,12 @@ app.post("/api/tickets", (req, res) => {
 
             "Support Type":
                 req.body.supportType || "",
+
+            "On-site Support Type":
+                req.body.supportType ===
+                "On-site Support"
+                    ? req.body.onSiteSupportType || ""
+                    : "",
 
             "Status":
                 "Open",
