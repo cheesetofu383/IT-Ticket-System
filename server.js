@@ -21,9 +21,34 @@ const lockFile = path.join(
     "database.xlsx.lock"
 );
 
-function writeWorkbook(workbook) {
+const LOCK_TIMEOUT_MS = 30000;
+
+function acquireWorkbookLock() {
     try {
-        fs.openSync(lockFile, "wx");
+        if (fs.existsSync(lockFile)) {
+            const lockInfo = fs.readFileSync(lockFile, "utf8");
+            const lockAge = Date.now() - fs.statSync(lockFile).mtimeMs;
+
+            if (lockAge > LOCK_TIMEOUT_MS) {
+                fs.unlinkSync(lockFile);
+            } else {
+                const lockError = new Error(
+                    "Another save is already in progress. Please wait a moment and try again."
+                );
+                lockError.code = "DATABASE_LOCKED";
+                throw lockError;
+            }
+        }
+
+        fs.writeFileSync(
+            lockFile,
+            JSON.stringify({
+                pid: process.pid,
+                timestamp: Date.now()
+            }),
+            { flag: "wx" }
+        );
+
     } catch (error) {
         if (error && error.code === "EEXIST") {
             const lockError = new Error(
@@ -33,8 +58,24 @@ function writeWorkbook(workbook) {
             throw lockError;
         }
 
+        if (error && error.code === "DATABASE_LOCKED") {
+            throw error;
+        }
+
         throw error;
     }
+}
+
+function releaseWorkbookLock() {
+    try {
+        if (fs.existsSync(lockFile)) {
+            fs.unlinkSync(lockFile);
+        }
+    } catch (_) {}
+}
+
+function writeWorkbook(workbook) {
+    acquireWorkbookLock();
 
     const tempWorkbookPath = path.join(
         excelDir,
@@ -72,11 +113,7 @@ function writeWorkbook(workbook) {
             }
         } catch (_) {}
 
-        try {
-            if (fs.existsSync(lockFile)) {
-                fs.unlinkSync(lockFile);
-            }
-        } catch (_) {}
+        releaseWorkbookLock();
     }
 
     return true;
