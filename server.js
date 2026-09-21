@@ -1,16 +1,86 @@
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const XLSX = require("xlsx");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const excelFile = path.join(
+const excelDir = path.join(
     __dirname,
-    "Database",
+    "Database"
+);
+
+const excelFile = path.join(
+    excelDir,
     "database.xlsx"
 );
 
+const lockFile = path.join(
+    excelDir,
+    "database.xlsx.lock"
+);
+
+function writeWorkbook(workbook) {
+    try {
+        fs.openSync(lockFile, "wx");
+    } catch (error) {
+        if (error && error.code === "EEXIST") {
+            const lockError = new Error(
+                "Another save is already in progress. Please wait a moment and try again."
+            );
+            lockError.code = "DATABASE_LOCKED";
+            throw lockError;
+        }
+
+        throw error;
+    }
+
+    const tempWorkbookPath = path.join(
+        excelDir,
+        `database-${Date.now()}-${Math.random().toString(16).slice(2)}.tmp.xlsx`
+    );
+
+    try {
+        XLSX.writeFile(workbook, tempWorkbookPath);
+
+        try {
+            fs.copyFileSync(tempWorkbookPath, excelFile);
+        } catch (error) {
+            const message = String(error && error.message ? error.message : error);
+            const isLocked =
+                error && (
+                    error.code === "EACCES" ||
+                    error.code === "EPERM" ||
+                    /locked|permission|access/i.test(message)
+                );
+
+            if (isLocked) {
+                const lockError = new Error(
+                    "The Excel database is currently locked. Please close the workbook in Excel and try again."
+                );
+                lockError.code = "DATABASE_LOCKED";
+                throw lockError;
+            }
+
+            throw error;
+        }
+    } finally {
+        try {
+            if (fs.existsSync(tempWorkbookPath)) {
+                fs.unlinkSync(tempWorkbookPath);
+            }
+        } catch (_) {}
+
+        try {
+            if (fs.existsSync(lockFile)) {
+                fs.unlinkSync(lockFile);
+            }
+        } catch (_) {}
+    }
+
+    return true;
+}
 
 /* =========================
    MIDDLEWARE
@@ -141,11 +211,7 @@ app.post("/api/customers/signup", (req, res) => {
             );
 
 
-        XLSX.writeFile(
-            workbook,
-            excelFile
-        );
-
+        writeWorkbook(workbook);
 
         console.log(
             "New customer saved to Excel:",
@@ -794,11 +860,7 @@ app.post("/api/tickets", (req, res) => {
            SAVE EXCEL FILE
         ========================= */
 
-        XLSX.writeFile(
-            workbook,
-            excelFile
-        );
-
+        writeWorkbook(workbook);
 
         console.log(
             "New ticket saved to Excel:",
@@ -1120,11 +1182,7 @@ app.put(
                 );
 
 
-            XLSX.writeFile(
-                workbook,
-                excelFile
-            );
-
+            writeWorkbook(workbook);
 
             console.log(
                 "Ticket updated:",
@@ -1146,12 +1204,11 @@ app.put(
                 error
             );
 
-            res.status(500).json({
-
-                message:
-                    "Unable to update ticket."
-
-            });
+                if (error && error.code === "DATABASE_LOCKED") {
+                    return res.status(409).json({
+                        message: error.message
+                    });
+                }
 
         }
 
@@ -1241,11 +1298,7 @@ app.delete(
                 );
 
 
-            XLSX.writeFile(
-                workbook,
-                excelFile
-            );
-
+            writeWorkbook(workbook);
 
             console.log(
                 "Ticket deleted:",
@@ -1632,11 +1685,7 @@ app.post(
                 );
 
 
-            XLSX.writeFile(
-                workbook,
-                excelFile
-            );
-
+            writeWorkbook(workbook);
 
             console.log(
                 "Service report created:",
