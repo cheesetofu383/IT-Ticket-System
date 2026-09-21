@@ -119,6 +119,160 @@ function writeWorkbook(workbook) {
     return true;
 }
 
+function normalizeEmail(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
+function getNextCustomerId(customersData) {
+    let candidate = 1;
+
+    while (true) {
+        const candidateId = `C-${String(candidate).padStart(13, "0")}`;
+        const isTaken = customersData.some(
+            customer => String(customer["Customer ID"] || "").trim() === candidateId
+        );
+
+        if (!isTaken) {
+            return candidateId;
+        }
+
+        candidate += 1;
+    }
+}
+
+function resolveCustomerForTicket(customersData, submittedCustomerId, submittedEmail, submittedName) {
+    const normalizedEmail = normalizeEmail(submittedEmail);
+
+    if (submittedCustomerId) {
+        const customerIndex = customersData.findIndex(
+            customer => String(customer["Customer ID"] || "") === String(submittedCustomerId)
+        );
+
+        if (customerIndex === -1) {
+            return { customer: null, customerIndex: -1, created: false, reason: "Customer not found." };
+        }
+
+        const customer = customersData[customerIndex];
+
+        if (!String(customer.Name || "").trim() && submittedName) {
+            customer.Name = submittedName;
+        }
+
+        return { customer, customerIndex, created: false, reason: null };
+    }
+
+    if (!normalizedEmail) {
+        return { customer: null, customerIndex: -1, created: false, reason: null };
+    }
+
+    const customerIndex = customersData.findIndex(
+        customer => normalizeEmail(customer.Email || "") === normalizedEmail
+    );
+
+    if (customerIndex !== -1) {
+        const customer = customersData[customerIndex];
+
+        if (!String(customer.Name || "").trim() && submittedName) {
+            customer.Name = submittedName;
+        }
+
+        return { customer, customerIndex, created: false, reason: null };
+    }
+
+    const newCustomer = {
+        "Customer ID": getNextCustomerId(customersData),
+        "Name": submittedName || "",
+        "Email": submittedEmail || "",
+        "Password": "",
+        "Credits": 0
+    };
+
+    customersData.push(newCustomer);
+
+    return { customer: newCustomer, customerIndex: customersData.length - 1, created: true, reason: null };
+}
+
+function repairMissingCustomerLinks(workbook) {
+    const customerWorksheet = workbook.Sheets["Customer"];
+    const ticketWorksheet = workbook.Sheets["Ticket"];
+
+    if (!customerWorksheet || !ticketWorksheet) {
+        return { fixedCount: 0, changed: false };
+    }
+
+    const customersData = XLSX.utils.sheet_to_json(customerWorksheet);
+    const ticketsData = XLSX.utils.sheet_to_json(ticketWorksheet);
+
+    let changed = false;
+    let fixedCount = 0;
+
+    for (const ticket of ticketsData) {
+        const ticketCustomerId = String(ticket["Customer ID"] || "").trim();
+        const ticketEmail = String(ticket["Email"] || "").trim();
+        const ticketName = String(ticket["Customer Name"] || "").trim();
+
+        if (!ticketCustomerId && !ticketEmail) {
+            continue;
+        }
+
+        let matchedCustomer = null;
+
+        if (ticketCustomerId) {
+            matchedCustomer = customersData.find(
+                customer => String(customer["Customer ID"] || "").trim() === ticketCustomerId
+            );
+        }
+
+        if (!matchedCustomer && ticketEmail) {
+            matchedCustomer = customersData.find(
+                customer => normalizeEmail(customer.Email || "") === normalizeEmail(ticketEmail)
+            );
+        }
+
+        if (!matchedCustomer && ticketEmail) {
+            const createdCustomer = resolveCustomerForTicket(
+                customersData,
+                "",
+                ticketEmail,
+                ticketName
+            );
+
+            matchedCustomer = createdCustomer.customer;
+            changed = true;
+            fixedCount += 1;
+        }
+
+        if (!matchedCustomer) {
+            continue;
+        }
+
+        if (!String(ticket["Customer ID"] || "").trim()) {
+            ticket["Customer ID"] = matchedCustomer["Customer ID"] || "";
+            changed = true;
+        }
+
+        if (!String(ticket["Customer Name"] || "").trim() && matchedCustomer.Name) {
+            ticket["Customer Name"] = matchedCustomer.Name;
+            changed = true;
+        }
+
+        if (!String(ticket["Email"] || "").trim() && matchedCustomer.Email) {
+            ticket["Email"] = matchedCustomer.Email;
+            changed = true;
+        }
+    }
+
+    if (!changed) {
+        return { fixedCount: 0, changed: false };
+    }
+
+    workbook.Sheets["Customer"] = XLSX.utils.json_to_sheet(customersData);
+    workbook.Sheets["Ticket"] = XLSX.utils.json_to_sheet(ticketsData);
+    writeWorkbook(workbook);
+
+    return { fixedCount, changed: true };
+}
+
 /* =========================
    MIDDLEWARE
 ========================= */
@@ -605,52 +759,60 @@ app.post("/api/tickets", (req, res) => {
             );
 
 
-        /* =========================
-           FIND CUSTOMER
-        ========================= */
+        const submittedCustomerId =
+            req.body.customerId;
 
-        const customerIndex =
-            customersData.findIndex(
-                customer =>
-                    customer["Customer ID"] ===
-                    req.body.customerId
+        const submittedEmail =
+            String(req.body.email || "").trim();
+
+        const submittedName =
+            String(req.body.customerName || "").trim();
+
+        const customerResolution =
+            resolveCustomerForTicket(
+                customersData,
+                submittedCustomerId,
+                submittedEmail,
+                submittedName
             );
 
 
-        /*
-           CUSTOMER ID IS OPTIONAL FOR
-           STAFF-CREATED TICKETS.
-
-           If a customer ID is provided,
-           we will find the customer and
-           handle credits.
-
-           If no customer ID is provided,
-           the ticket can still be created
-           using the manually entered
-           customer name and email.
-        */
-
-        let customer = null;
+        if (customerResolution.reason) {
+            return res.status(404).json({
+                message: customerResolution.reason
+            });
+        }
 
 
-        if (req.body.customerId) {
+        const customer =
+            customerResolution.customer;
 
-            if (customerIndex === -1) {
-
-                return res.status(404).json({
-
-                    message:
-                        "Customer not found."
-
-                });
-
-            }
+        const customerIndex =
+            customerResolution.customerIndex;
 
 
-            customer =
-                customersData[customerIndex];
+        if (!customer) {
+            return res.status(400).json({
+                message: "Customer is required."
+            });
+        }
 
+
+        if (customerResolution.created) {
+            console.log(
+                "Auto-created customer for ticket:",
+                customer,
+                "customerCount:",
+                customersData.length
+            );
+
+            workbook.Sheets["Customer"] =
+                XLSX.utils.json_to_sheet(customersData);
+            writeWorkbook(workbook);
+            console.log(
+                "Customer sheet saved after auto-create. Total customers:",
+                customersData.length
+            );
         }
 
 
@@ -862,13 +1024,13 @@ app.post("/api/tickets", (req, res) => {
                 "T-" + Date.now(),
 
             "Customer ID":
-                req.body.customerId || "",
+                customer["Customer ID"] || "",
 
             "Customer Name":
-                req.body.customerName || "",
+                customer.Name || submittedName || "",
 
             "Email":
-                req.body.email || "",
+                customer.Email || submittedEmail || "",
 
             "Issue":
                 req.body.issue || "",
@@ -1219,6 +1381,72 @@ app.put(
             }
 
 
+            const currentTicket =
+                ticketsData[ticketIndex];
+
+            const customerRecordToUse =
+                currentTicket["Customer ID"] ||
+                req.body.customerId ||
+                "";
+
+            const customerEmailToUse =
+                String(
+                    req.body.email ||
+                    currentTicket["Email"] ||
+                    ""
+                ).trim();
+
+            const customerNameToUse =
+                String(
+                    req.body.customerName ||
+                    currentTicket["Customer Name"] ||
+                    ""
+                ).trim();
+
+            const customerWorksheet =
+                workbook.Sheets["Customer"];
+
+            if (!customerWorksheet) {
+                return res.status(500).json({
+                    message: "Customer sheet not found."
+                });
+            }
+
+            const customersData =
+                XLSX.utils.sheet_to_json(
+                    customerWorksheet
+                );
+
+            let resolvedCustomer = null;
+
+            if (customerRecordToUse || customerEmailToUse) {
+                const customerResolution =
+                    resolveCustomerForTicket(
+                        customersData,
+                        customerRecordToUse,
+                        customerEmailToUse,
+                        customerNameToUse
+                    );
+
+                resolvedCustomer = customerResolution.customer;
+
+                if (customerResolution.created) {
+                    workbook.Sheets["Customer"] =
+                        XLSX.utils.json_to_sheet(customersData);
+                }
+            }
+
+            if (resolvedCustomer) {
+                currentTicket["Customer ID"] =
+                    resolvedCustomer["Customer ID"] || "";
+
+                currentTicket["Customer Name"] =
+                    resolvedCustomer.Name || customerNameToUse || "";
+
+                currentTicket["Email"] =
+                    resolvedCustomer.Email || customerEmailToUse || "";
+            }
+
             /* =========================
                UPDATE TICKET
             ========================= */
@@ -1247,6 +1475,11 @@ app.put(
             ] =
                 req.body.serviceResult || "";
 
+
+            if (customerResolution.created) {
+                workbook.Sheets["Customer"] =
+                    XLSX.utils.json_to_sheet(customersData);
+            }
 
             /* =========================
                SAVE
@@ -1881,6 +2114,22 @@ app.get(
 /* =========================================================
    START SERVER
 ========================================================= */
+
+try {
+    const startupWorkbook = XLSX.readFile(excelFile);
+    const startupRepair = repairMissingCustomerLinks(startupWorkbook);
+
+    if (startupRepair.changed) {
+        console.log(
+            `Startup repair fixed ${startupRepair.fixedCount} orphaned or missing customer ticket link(s).`
+        );
+    }
+} catch (error) {
+    console.error(
+        "Startup customer repair error:",
+        error
+    );
+}
 
 app.listen(
     PORT,
