@@ -150,6 +150,44 @@ body {
 }
 
 /* =========================
+   SHARED ACTION BUTTONS
+========================= */
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.save-button {
+    background: #1769aa;
+    color: white;
+}
+
+.save-button:hover {
+    background: #12578c;
+}
+
+.delete-button {
+    background: #dc2626;
+    color: white;
+}
+
+.delete-button:hover {
+    background: #b91c1c;
+}
+
+/* =========================
    TOP BAR
 ========================= */
 

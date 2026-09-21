@@ -2,9 +2,14 @@
    MAIN PAGE
 ========================================================= */
 
-function loginAsCustomer() {
-    window.location.href = "/customer-login.html";
-}
+/*
+   CUSTOMER-FACING ENTRY DISABLED.
+   Restore by uncommenting the original block below.
+   Original behavior: redirect customer users to /customer-login.html
+   // function loginAsCustomer() {
+   //     window.location.href = "/customer-login.html";
+   // }
+*/
 
 function loginAsStaff() {
     window.location.href = "/staff-login.html";
@@ -790,6 +795,175 @@ async function loadTicketDetails() {
 
 
 /* =========================================================
+   VIEW SAVED SERVICE REPORT
+========================================================= */
+
+async function viewSavedReport() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const ticketId =
+        params.get("ticketId");
+
+    if (!ticketId) {
+        alert("Ticket ID not found.");
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/tickets/${encodeURIComponent(ticketId)}/service-reports`
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load service report."
+            );
+        }
+
+        const reports =
+            await response.json();
+
+        if (!Array.isArray(reports) || reports.length === 0) {
+            alert(
+                "No service report has been created for this ticket yet."
+            );
+            return;
+        }
+
+        const report =
+            reports[reports.length - 1];
+
+        const modal =
+            document.getElementById("reportModal");
+
+        if (!modal) {
+            alert("Service report modal is unavailable.");
+            return;
+        }
+
+        const repTicketId =
+            document.getElementById("repTicketId");
+
+        const repCustomer =
+            document.getElementById("repCustomer");
+
+        const repEmail =
+            document.getElementById("repEmail");
+
+        const repIssue =
+            document.getElementById("repIssue");
+
+        const repSupportType =
+            document.getElementById("repSupportType");
+
+        const repEngineer =
+            document.getElementById("repEngineer");
+
+        const repOnsite =
+            document.getElementById("repOnsite");
+
+        const repDate =
+            document.getElementById("repDate");
+
+        const repTime =
+            document.getElementById("repTime");
+
+        const repHours =
+            document.getElementById("repHours");
+
+        const repTasks =
+            document.getElementById("repTasks");
+
+        const repResolution =
+            document.getElementById("repResolution");
+
+        if (repTicketId) {
+            repTicketId.textContent =
+                report["Ticket ID"] || ticketId;
+        }
+
+        if (repCustomer) {
+            repCustomer.textContent =
+                `${report["Customer Name"] || ""} (${report["Customer ID"] || ""})`;
+        }
+
+        if (repEmail) {
+            repEmail.textContent =
+                report.Email || report["Customer Email"] || "-";
+        }
+
+        if (repIssue) {
+            repIssue.textContent =
+                report.Issue || report["Reported Issue"] || "-";
+        }
+
+        if (repSupportType) {
+            repSupportType.textContent =
+                report["Support Type"] || report.supportType || "-";
+        }
+
+        if (repEngineer) {
+            repEngineer.textContent =
+                report.Engineer || report["Assigned Engineer"] || "-";
+        }
+
+        if (repOnsite) {
+            repOnsite.textContent =
+                report.Onsite === "Yes"
+                    ? "On-site Support"
+                    : "Remote / Off-site";
+        }
+
+        if (repDate) {
+            repDate.textContent =
+                report.Date || "-";
+        }
+
+        if (repTime) {
+            repTime.textContent =
+                `${report.SignInTime || "-"} to ${report.SignOutTime || "-"}`;
+        }
+
+        if (repHours) {
+            repHours.textContent =
+                `${report.HoursSpent || 0} Hours`;
+        }
+
+        if (repTasks) {
+            repTasks.textContent =
+                report.TasksDone || "-";
+        }
+
+        if (repResolution) {
+            repResolution.textContent =
+                report.Resolution || "-";
+        }
+
+        modal.style.display = "flex";
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load report:",
+            error
+        );
+
+        alert(
+            "Error loading service report."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    LOAD ENGINEERS
 ========================================================= */
 
@@ -1124,11 +1298,12 @@ function logoutStaff() {
 }
 
 
-function logoutCustomer() {
-
-    localStorage.removeItem("customer");
-
-    window.location.href =
-        "/customer-login.html";
-
-}
+/*
+   CUSTOMER-FACING LOGOUT DISABLED.
+   Restore by uncommenting the original block below.
+   Original behavior: localStorage.removeItem("customer"); window.location.href = "/customer-login.html";
+   // function logoutCustomer() {
+   //     localStorage.removeItem("customer");
+   //     window.location.href = "/customer-login.html";
+   // }
+*/

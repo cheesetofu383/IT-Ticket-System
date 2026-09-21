@@ -176,6 +176,11 @@
 
 <body>
 
+<!--
+    CUSTOMER-FACING PAGE DISABLED.
+    Restore by uncommenting the original customer portal markup and redirect logic.
+    Original customer flow: /ticket-form.html and /customer-login.html
+-->
 
     <!-- =========================
          NAVBAR
@@ -189,12 +194,16 @@
 
         <div class="nav-right">
 
+            <!--
+            CUSTOMER-FACING TICKET LINK DISABLED.
+            Original target: /ticket-form.html
             <a
                 href="/ticket-form.html"
                 class="nav-link"
             >
                 Submit Ticket
             </a>
+            -->
 
             <a
                 href="/"
@@ -232,12 +241,16 @@
             </div>
 
 
+            <!--
+            CUSTOMER-FACING BUTTON DISABLED.
+            Original target: /ticket-form.html
             <a
                 href="/ticket-form.html"
                 class="new-ticket-button"
             >
                 + Submit New Ticket
             </a>
+            -->
 
         </section>
 
@@ -342,12 +355,16 @@
                     it will appear here.
                 </p>
 
+                <!--
+                CUSTOMER-FACING CTA DISABLED.
+                Original target: /ticket-form.html
                 <a
                     href="/ticket-form.html"
                     class="empty-button"
                 >
                     Submit Your First Ticket
                 </a>
+                -->
 
             </div>
 
@@ -363,11 +380,14 @@
     ========================= -->
 
     <script>
+        /*
+        CUSTOMER-FACING LOGIN GATE DISABLED.
+        Original behavior: if no customer is present, redirect to /customer-login.html
         const customer = localStorage.getItem("customer");
-
         if (!customer) {
             window.location.href = "/customer-login.html";
-            }
+        }
+        */
         async function loadTickets() {
 
             try {
@@ -377,19 +397,23 @@
                 const customerData =
                     localStorage.getItem("customer");
 
+                if (!customerData) {
+                    console.log("Customer portal is disabled; no customer session is active.");
+                    return;
+                }
+
 
                 /* CHECK IF CUSTOMER IS LOGGED IN */
 
+                /*
+                CUSTOMER-FACING REDIRECT DISABLED.
+                Original behavior: if no customerData, alert and redirect to /customer-login.html
                 if (!customerData) {
-
                     alert("Please log in first.");
-
-                    window.location.href =
-                        "/customer-login.html";
-
+                    window.location.href = "/customer-login.html";
                     return;
-
                 }
+                */
 
 
                 const customer =
@@ -398,14 +422,17 @@
 
                 /* GET ONLY THIS CUSTOMER'S TICKETS */
 
+                /*
+                CUSTOMER-FACING DATA FILTER DISABLED.
+                Original behavior: fetch only this customer's tickets using customerId
                 const response = await fetch(
                     "/api/tickets?customerId="
                     + encodeURIComponent(customer.customerId)
                 );
+                */
 
 
-                const tickets =
-                    await response.json();
+                const tickets = [];
 
 
                 const emptyState =

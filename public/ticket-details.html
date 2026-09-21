@@ -8,113 +8,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<<<<<<< HEAD
-<title>Ticket Details - IT Support</title>
-=======
     <link rel="stylesheet" href="/style.css">
 
     <style>
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
-
-<style>
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f4f7fb;
-        color: #1f2937;
-        min-height: 100vh;
-    }
-
-<<<<<<< HEAD
-    /* =========================
-       NAVBAR
-    ========================= */
-
-    .navbar {
-        height: 70px;
-
-        background: white;
-
-        border-bottom: 1px solid #e5e7eb;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        padding: 0 50px;
-    }
-
-    .logo {
-        font-size: 24px;
-        font-weight: bold;
-
-        color: #1769aa;
-    }
-
-    .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-    }
-
-    .nav-link {
-        text-decoration: none;
-
-        color: #4b5563;
-
-        font-size: 14px;
-    }
-
-    .nav-link:hover {
-        color: #1769aa;
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
 
     .container {
         max-width: 1100px;
-
-        margin: 45px auto;
-
-        padding: 0 25px;
     }
-
-    /* =========================
-       BACK BUTTON
-    ========================= */
 
     .back-link {
         display: inline-block;
-
-        margin-bottom: 20px;
-=======
-        /* =========================
-           MAIN
-        ========================= */
-
-        .container {
-            max-width: 1100px;
-        }
-
-        /* =========================
-           BACK BUTTON
-        ========================= */
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
-
+        margin-bottom: 25px;
         color: #1769aa;
-
         text-decoration: none;
-
         font-size: 14px;
-
         font-weight: bold;
     }
 
@@ -122,109 +29,52 @@
         text-decoration: underline;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     .ticket-header {
         background: white;
-
         border-radius: 16px;
-
         padding: 30px;
-
         margin-bottom: 25px;
-
-        box-shadow:
-            0 10px 30px rgba(0, 0, 0, 0.06);
-
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         display: flex;
-
         justify-content: space-between;
-
         align-items: flex-start;
-
         gap: 20px;
     }
 
     .ticket-header h1 {
         font-size: 27px;
-
         margin-bottom: 8px;
     }
 
     .ticket-id {
         color: #6b7280;
-
         font-size: 14px;
     }
 
-    .status {
-        display: inline-block;
-
-        padding: 8px 14px;
-
-        border-radius: 20px;
-
-<<<<<<< HEAD
-        background: #eef6fc;
-
-        color: #1769aa;
-
-        font-size: 13px;
-
-        font-weight: bold;
-    }
-
-    /* =========================
-       GRID
-    ========================= */
-
     .content-grid {
         display: grid;
-
-        grid-template-columns:
-            2fr 1fr;
-
+        grid-template-columns: 2fr 1fr;
         gap: 25px;
     }
 
-    /* =========================
-       CARDS
-    ========================= */
-
     .card {
         background: white;
-
         border-radius: 16px;
-
         padding: 30px;
-
-        box-shadow:
-            0 10px 30px rgba(0, 0, 0, 0.06);
-
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         margin-bottom: 25px;
     }
 
     .card h2 {
         font-size: 20px;
-
         margin-bottom: 25px;
     }
 
-    /* =========================
-       INFORMATION
-    ========================= */
-
     .info-row {
         display: grid;
-
         grid-template-columns: 160px 1fr;
-
         gap: 15px;
-
         padding: 15px 0;
-
         border-bottom: 1px solid #f0f0f0;
     }
 
@@ -234,21 +84,14 @@
 
     .info-label {
         color: #6b7280;
-
         font-size: 14px;
-
         font-weight: bold;
     }
 
     .info-value {
         font-size: 14px;
-
         color: #374151;
     }
-
-    /* =========================
-       FORM
-    ========================= */
 
     .form-group {
         margin-bottom: 20px;
@@ -256,28 +99,19 @@
 
     label {
         display: block;
-
         margin-bottom: 8px;
-
         font-size: 14px;
-
         font-weight: bold;
     }
 
     select,
     textarea {
         width: 100%;
-
         padding: 12px 14px;
-
         border: 1px solid #d1d5db;
-
         border-radius: 8px;
-
         font-size: 14px;
-
         font-family: Arial, Helvetica, sans-serif;
-
         outline: none;
     }
 
@@ -288,89 +122,24 @@
 
     textarea {
         min-height: 120px;
-
         resize: vertical;
     }
 
-    /* =========================
-       BUTTONS
-    ========================= */
-
-    .button-group {
-        display: flex;
-
-        gap: 10px;
-    }
-
-    .button {
-        border: none;
-
-        border-radius: 8px;
-
-        padding: 12px 18px;
-
-        font-size: 14px;
-
-        font-weight: bold;
-
-        cursor: pointer;
-    }
-
-    .save-button {
-        background: #1769aa;
-
-        color: white;
-    }
-
-    .save-button:hover {
-        background: #12578c;
-    }
-
-    .delete-button {
-        background: #dc2626;
-
-        color: white;
-    }
-
-    .delete-button:hover {
-        background: #b91c1c;
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
     @media (max-width: 800px) {
-=======
-        .status {
-            padding: 8px 14px;
-            font-size: 13px;
+        .ticket-header {
+            flex-direction: column;
         }
-
-        /* =========================
-           GRID
-        ========================= */
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
 
         .content-grid {
             grid-template-columns: 1fr;
         }
 
-        .ticket-header {
-            flex-direction: column;
-        }
-
         .navbar {
             padding: 0 20px;
         }
-
-        .container {
-            margin: 30px auto;
-        }
-
     }
 
-</style>
+    </style>
 
 
 </head>
@@ -424,15 +193,12 @@
 
 <main class="container">
 
-
     <a
         href="/staff.html"
         class="back-link"
     >
         ← Back to Dashboard
     </a>
-
-
 
     <!-- =========================
          TICKET HEADER
@@ -455,7 +221,6 @@
 
         </div>
 
-
         <div
             class="status"
             id="ticketStatus"
@@ -465,21 +230,17 @@
 
     </section>
 
-
-
     <!-- =========================
          CONTENT
     ========================= -->
 
     <div class="content-grid">
 
-
         <!-- =========================
              LEFT SIDE
         ========================= -->
 
         <div>
-
 
             <!-- CUSTOMER INFORMATION -->
 
@@ -489,57 +250,43 @@
                     Customer Information
                 </h2>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Customer ID
                     </div>
-
                     <div
                         class="info-value"
                         id="customerId"
                     >
                         -
                     </div>
-
                 </div>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Customer Name
                     </div>
-
                     <div
                         class="info-value"
                         id="customerName"
                     >
                         -
                     </div>
-
                 </div>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Email
                     </div>
-
                     <div
                         class="info-value"
                         id="customerEmail"
                     >
                         -
                     </div>
-
                 </div>
 
             </section>
-
-
 
             <!-- ISSUE INFORMATION -->
 
@@ -549,167 +296,88 @@
                     Ticket Information
                 </h2>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Issue
                     </div>
-
                     <div
                         class="info-value"
                         id="issue"
                     >
                         -
                     </div>
-
                 </div>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Support Type
                     </div>
-
                     <div
                         class="info-value"
                         id="supportType"
                     >
                         -
                     </div>
-
                 </div>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Appointment Date
                     </div>
-
                     <div
                         class="info-value"
                         id="appointmentDate"
                     >
                         -
                     </div>
-
-<<<<<<< HEAD
                 </div>
-=======
-
-                    <div class="button-group"> 
-
-    <button 
-        class="button save-button" 
-        type="button" 
-        onclick="saveChanges()" 
-    > 
-        Save Changes 
-    </button>
-
-    <button
-            class="button"
-            type="button"
-            style="background: #0284c7; color: white;"
-            onclick="viewSavedReport()"
-    > 
-            View Service Report
-    </button>
-
-    <button 
-        class="button delete-button" 
-        type="button" 
-        onclick="deleteTicket()" 
-    > 
-        Delete Ticket 
-    </button>
-
-</div>
-
-                </section>
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
-
 
                 <div class="info-row">
-
                     <div class="info-label">
                         Appointment Time
                     </div>
-
                     <div
                         class="info-value"
                         id="appointmentTime"
                     >
                         -
                     </div>
-
                 </div>
 
-
                 <div class="info-row">
-
                     <div class="info-label">
                         Created Date
                     </div>
-
                     <div
                         class="info-value"
                         id="createdDate"
                     >
                         -
                     </div>
+                </div>
+
+                <div class="button-group" style="margin-top: 20px;">
+
+                    <button
+                        class="button"
+                        type="button"
+                        style="background: #0284c7; color: white;"
+                        onclick="viewSavedReport()"
+                    >
+                        View Service Report
+                    </button>
 
                 </div>
 
             </section>
 
-
         </div>
-
-<!-- REPORT PREVIEW & PRINT MODAL -->
-    <!-- REPORT PREVIEW & PRINT MODAL -->
-<div class="modal" id="reportModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 20px; z-index: 1000;">
-    <div style="background: white; max-width: 650px; width: 100%; border-radius: 12px; padding: 30px; max-height: 90vh; overflow-y: auto;">
-        <div id="printableReport">
-            <h2 style="color: #1769aa; margin-bottom: 5px;">SERVICE REPORT</h2>
-            <p style="color: #6b7280; font-size: 13px; margin-bottom: 15px;">IT Support Resolution Summary</p>
-            <table style="width: 100%; border-collapse: collapse;">
-                <!-- TICKET DETAILS -->
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; width: 35%;">Ticket ID:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTicketId"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Customer Name:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repCustomer"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Customer Email:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repEmail"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Reported Issue:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repIssue"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Support Type:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repSupportType"></td></tr>
-
-<<<<<<< HEAD
-=======
-                <!-- SERVICE LOG DETAILS -->
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Assigned Engineer:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repEngineer"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Support Mode:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repOnsite"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Service Date:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repDate"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Time Log:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTime"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #1769aa;">Hours Spent:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repHours"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Tasks Done:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTasks"></td></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Resolution:</td><td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repResolution"></td></tr>
-            </table>
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="button" class="button" style="background: #1769aa; color: white;" onclick="window.print()">Print / Save PDF</button>
-            <button type="button" class="button" style="background: #e5e7eb; color: #374151;" onclick="document.getElementById('reportModal').style.display='none'">Close</button>
-        </div>
-    </div>
-</div>
-    </main>
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
 
         <!-- =========================
              RIGHT SIDE
         ========================= -->
 
         <div>
-
 
             <!-- UPDATE TICKET -->
 
@@ -719,143 +387,65 @@
                     Manage Ticket
                 </h2>
 
-
                 <div class="form-group">
-
                     <label for="assignedEngineer">
                         Assigned Engineer
                     </label>
-
                     <select id="assignedEngineer">
-
                         <option value="">
                             Unassigned
                         </option>
-
                     </select>
-
                 </div>
 
-
-<<<<<<< HEAD
                 <div class="form-group">
-=======
-}
-
-
-        // =========================
-        // VIEW SAVED SERVICE REPORT
-        // =========================
-        async function viewSavedReport() {
-            const params = new URLSearchParams(window.location.search);
-            const ticketId = params.get("ticketId");
-
-            if (!ticketId) {
-                alert("Ticket ID not found.");
-                return;
-            }
-
-            try {
-                const res = await fetch(`/api/tickets/${encodeURIComponent(ticketId)}/service-reports`);
-                const reports = await res.json();
-
-                if (!reports || reports.length === 0) {
-                    alert("No service report has been created for this ticket yet.");
-                    return;
-                }
-
-                // Pick the most recently created report
-                const report = reports[reports.length - 1];
-
-                document.getElementById("repTicketId").textContent = report["Ticket ID"] || "-";
-                document.getElementById("repCustomer").textContent = `${report["Customer Name"] || ""} (${report["Customer ID"] || ""})`;
-                document.getElementById("repEngineer").textContent = report["Engineer"] || "-";
-                document.getElementById("repOnsite").textContent = report["Onsite"] === "Yes" ? "On-site Support" : "Remote / Off-site";
-                document.getElementById("repDate").textContent = report["Date"] || "-";
-                document.getElementById("repTime").textContent = `${report["SignInTime"] || "-"} to ${report["SignOutTime"] || "-"}`;
-                document.getElementById("repHours").textContent = `${report["HoursSpent"] || 0} Hours`;
-                document.getElementById("repTasks").textContent = report["TasksDone"] || "-";
-                document.getElementById("repResolution").textContent = report["Resolution"] || "-";
-
-                // Open the modal
-                document.getElementById("reportModal").style.display = "flex";
-
-            } catch (err) {
-                console.error("Failed to load report:", err);
-                alert("Error loading service report.");
-            }
-        }
-        async function loadTicket() {
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
-
                     <label for="status">
                         Status
                     </label>
-
                     <select id="status">
-
                         <option value="Open">
                             Open
                         </option>
-
                         <option value="In Progress">
                             In Progress
                         </option>
-
                         <option value="Pending">
                             Pending
                         </option>
-
                         <option value="Closed">
                             Closed
                         </option>
-
                     </select>
-
                 </div>
 
-
                 <div class="form-group">
-
                     <label for="appointmentStatus">
                         Appointment Status
                     </label>
-
                     <select id="appointmentStatus">
-
                         <option value="Pending">
                             Pending
                         </option>
-
                         <option value="Confirmed">
                             Confirmed
                         </option>
-
                         <option value="Reschedule Required">
                             Reschedule Required
                         </option>
-
                     </select>
-
                 </div>
 
-
                 <div class="form-group">
-
                     <label for="serviceResult">
                         Service Result
                     </label>
-
                     <textarea
                         id="serviceResult"
                         placeholder="Enter the result of the service..."
                     ></textarea>
-
                 </div>
 
-
                 <div class="button-group">
-
                     <button
                         class="button save-button"
                         type="button"
@@ -864,7 +454,6 @@
                         Save Changes
                     </button>
 
-
                     <button
                         class="button delete-button"
                         type="button"
@@ -872,24 +461,85 @@
                     >
                         Delete Ticket
                     </button>
-
                 </div>
-
 
             </section>
 
-
         </div>
-
 
     </div>
 
+    <!-- REPORT PREVIEW & PRINT MODAL -->
+    <div
+        class="modal"
+        id="reportModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 20px; z-index: 1000;"
+    >
+        <div style="background: white; max-width: 650px; width: 100%; border-radius: 12px; padding: 30px; max-height: 90vh; overflow-y: auto;">
+            <div id="printableReport">
+                <h2 style="color: #1769aa; margin-bottom: 5px;">SERVICE REPORT</h2>
+                <p style="color: #6b7280; font-size: 13px; margin-bottom: 15px;">IT Support Resolution Summary</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; width: 35%;">Ticket ID:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTicketId"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Customer Name:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repCustomer"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Customer Email:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repEmail"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Reported Issue:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repIssue"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Support Type:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repSupportType"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Assigned Engineer:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repEngineer"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Support Mode:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repOnsite"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Service Date:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repDate"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Time Log:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTime"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #1769aa;">Hours Spent:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repHours"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Tasks Done:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repTasks"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Resolution:</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;" id="repResolution"></td>
+                    </tr>
+                </table>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" class="button" style="background: #1769aa; color: white;" onclick="window.print()">Print / Save PDF</button>
+                <button type="button" class="button" style="background: #e5e7eb; color: #374151;" onclick="document.getElementById('reportModal').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
 
 </main>
 
-
 <script src="/script.js"></script>
-
 
 </body>
 

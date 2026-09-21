@@ -1,22 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Ticket - IT Support</title>
-
     <link rel="stylesheet" href="/style.css">
-
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -30,23 +19,13 @@
             min-height: 100vh;
         }
 
-
-<<<<<<< HEAD
-        /* =========================
-           NAVBAR
-        ========================= */
-
         .navbar {
             height: 70px;
-
             background: white;
-
             border-bottom: 1px solid #e5e7eb;
-
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             padding: 0 50px;
         }
 
@@ -66,68 +45,29 @@
             color: #1769aa;
         }
 
-
-        /* =========================
-           MAIN CONTAINER
-        ========================= */
-
         .container {
             max-width: 700px;
-
             margin: 45px auto;
-
             padding: 0 25px;
-=======
-        /* MAIN */
-
-        .container {
-            max-width: 900px;
-            margin: 50px auto;
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
         }
-
-
-<<<<<<< HEAD
-        /* =========================
-           FORM CARD
-        ========================= */
-=======
-        .page-header h1 {
-            margin-bottom: 10px;
-        }
-
-        /* FORM CARD */
->>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
 
         .form-card {
             background: white;
-
             padding: 35px;
-
             border-radius: 16px;
-
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         }
 
         h1 {
             font-size: 28px;
-
             margin-bottom: 8px;
         }
 
         .subtitle {
             color: #6b7280;
-
             font-size: 14px;
-
             margin-bottom: 30px;
         }
-
-
-        /* =========================
-           FORM GROUP
-        ========================= */
 
         .form-group {
             margin-bottom: 20px;
@@ -135,11 +75,8 @@
 
         label {
             display: block;
-
             font-size: 14px;
-
             font-weight: bold;
-
             margin-bottom: 8px;
         }
 
@@ -147,17 +84,11 @@
         textarea,
         select {
             width: 100%;
-
             padding: 12px 14px;
-
             border: 1px solid #d1d5db;
-
             border-radius: 8px;
-
             font-size: 14px;
-
             font-family: Arial, Helvetica, sans-serif;
-
             outline: none;
         }
 
@@ -169,59 +100,33 @@
 
         textarea {
             min-height: 130px;
-
             resize: vertical;
         }
 
-
-        /* =========================
-           APPOINTMENT SECTION
-        ========================= */
-
         #appointmentSection {
             display: none;
-
             margin-top: 10px;
-
             padding: 20px;
-
             background: #f8fafc;
-
             border: 1px solid #e5e7eb;
-
             border-radius: 10px;
         }
 
         #appointmentSection h3 {
             font-size: 16px;
-
             margin-bottom: 18px;
         }
 
-
-        /* =========================
-           SUBMIT BUTTON
-        ========================= */
-
         button {
             width: 100%;
-
             padding: 13px;
-
             border: none;
-
             border-radius: 8px;
-
             background: #1769aa;
-
             color: white;
-
             font-size: 15px;
-
             font-weight: bold;
-
             cursor: pointer;
-
             margin-top: 10px;
         }
 
@@ -229,28 +134,14 @@
             background: #12578c;
         }
 
-
-        /* =========================
-           MESSAGE
-        ========================= */
-
         #ticketMessage {
             margin-top: 20px;
-
             font-size: 14px;
-
             color: #1769aa;
-
             text-align: center;
         }
 
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
         @media (max-width: 650px) {
-
             .navbar {
                 padding: 0 20px;
             }
@@ -262,242 +153,72 @@
             .form-card {
                 padding: 25px;
             }
-
         }
-
     </style>
-
 </head>
-
-
 <body>
-
-
-    <!-- =========================
-         NAVBAR
-    ========================= -->
-
     <nav class="navbar">
-
-        <div class="logo">
-            IT Support
-        </div>
-
-        <a
-            href="/staff.html"
-            class="back-link"
-        >
-            ← Back to Staff Portal
-        </a>
-
+        <div class="logo">IT Support</div>
+        <a href="/staff.html" class="back-link">← Back to Staff Portal</a>
     </nav>
 
-
-    <!-- =========================
-         MAIN
-    ========================= -->
-
     <main class="container">
-
         <div class="form-card">
-
-            <h1>
-                Submit a Support Ticket
-            </h1>
-
-            <p class="subtitle">
-                Tell us about your IT issue and our support team will assist you.
-            </p>
-
-
-            <!-- =========================
-                 TICKET FORM
-            ========================= -->
+            <h1>Submit a Support Ticket</h1>
+            <p class="subtitle">Tell us about your IT issue and our support team will assist you.</p>
 
             <form id="ticketForm">
-
-
-                <!-- CUSTOMER NAME -->
-
                 <div class="form-group">
-
-                    <label for="customerName">
-                        Customer Name
-                    </label>
-
-                    <input 
-    type="text" 
-    id="customerName" 
-    placeholder="Customer name" 
-    required
->
-
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" id="customerName" placeholder="Customer name" required>
                 </div>
 
-
-                <!-- EMAIL -->
-
                 <div class="form-group">
-
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input 
-    type="email" 
-    id="email" 
-    placeholder="Customer email" 
-    required
->
-
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Customer email" required>
                 </div>
 
-
-                <!-- ISSUE -->
-
                 <div class="form-group">
-
-                    <label for="issue">
-                        Describe Your Issue
-                    </label>
-
-                    <textarea
-                        id="issue"
-                        placeholder="Please describe the IT issue you are experiencing..."
-                        required
-                    ></textarea>
-
+                    <label for="issue">Describe Your Issue</label>
+                    <textarea id="issue" placeholder="Please describe the IT issue you are experiencing..." required></textarea>
                 </div>
 
-
-                <!-- SUPPORT TYPE -->
-
                 <div class="form-group">
-
-                    <label for="supportType">
-                        Support Type
-                    </label>
-
-                    <select
-                        id="supportType"
-                        required
-                    >
-
-                        <option value="">
-                            Select support type
-                        </option>
-
-                        <option value="Phone Support">
-                            Phone Support
-                        </option>
-
-                        <option value="Email Support">
-                            Email Support
-                        </option>
-
-                        <option value="Remote Support">
-                            Remote Support
-                        </option>
-
-                        <option value="On-site Support">
-                            On-site Support
-                        </option>
-
+                    <label for="supportType">Support Type</label>
+                    <select id="supportType" required>
+                        <option value="">Select support type</option>
+                        <option value="Phone Support">Phone Support</option>
+                        <option value="Email Support">Email Support</option>
+                        <option value="Remote Support">Remote Support</option>
+                        <option value="On-site Support">On-site Support</option>
                     </select>
-
                 </div>
-
-
-                <!-- =========================
-                     APPOINTMENT SECTION
-                ========================= -->
 
                 <div id="appointmentSection">
-
-                    <h3>
-                        On-site Support Appointment
-                    </h3>
-
-
-                    <!-- DATE -->
+                    <h3>On-site Support Appointment</h3>
 
                     <div class="form-group">
-
-                        <label for="appointmentDate">
-                            Appointment Date
-                        </label>
-
-                        <input
-                            type="date"
-                            id="appointmentDate"
-                        >
-
+                        <label for="appointmentDate">Appointment Date</label>
+                        <input type="date" id="appointmentDate">
                     </div>
-
-
-                    <!-- TIME -->
 
                     <div class="form-group">
-
-                        <label for="appointmentTime">
-                            Appointment Time
-                        </label>
-
-                        <input
-                            type="time"
-                            id="appointmentTime"
-                        >
-
+                        <label for="appointmentTime">Appointment Time</label>
+                        <input type="time" id="appointmentTime">
                     </div>
-
-
-                    <!-- DURATION -->
 
                     <div class="form-group">
-
-                        <label for="appointmentDuration">
-                            Duration (hours)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="appointmentDuration"
-                            min="2"
-                            step="0.5"
-                            placeholder="Minimum 2 hours"
-                        >
-
+                        <label for="appointmentDuration">Duration (hours)</label>
+                        <input type="number" id="appointmentDuration" min="2" step="0.5" placeholder="Minimum 2 hours">
                     </div>
-
                 </div>
 
-
-                <!-- SUBMIT -->
-
-                <button type="submit">
-                    Submit Ticket
-                </button>
-
-
-                <!-- MESSAGE -->
-
+                <button type="submit">Submit Ticket</button>
                 <div id="ticketMessage"></div>
-
-
             </form>
-
         </div>
-
     </main>
 
-
-    <!-- =========================
-         MAIN JAVASCRIPT
-    ========================= -->
-
     <script src="/script.js"></script>
-
-
 </body>
-
 </html>

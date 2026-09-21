@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 const excelFile = path.join(
     __dirname,
-    "database",
+    "Database",
     "database.xlsx"
 );
 
@@ -1759,7 +1759,7 @@ app.listen(
     () => {
 
         console.log(
-            `IT Ticketing System running on port ${PORT}`
+            `IT Ticketing System running on http://localhost:${PORT}`
         );
 
     }
