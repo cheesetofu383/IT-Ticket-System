@@ -8,7 +8,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<<<<<<< HEAD
 <title>Staff Profile - IT Support</title>
+=======
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+>>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
 
 <style>
 
@@ -25,6 +31,7 @@
         min-height: 100vh;
     }
 
+<<<<<<< HEAD
     /* =========================
        NAVBAR
     ========================= */
@@ -249,6 +256,41 @@
             margin: 30px auto;
         }
 
+=======
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            max-width: 800px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #6b7280;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           PROFILE CARD
+        ========================= */
+
+>>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
         .profile-card {
             padding: 25px;
         }
@@ -368,18 +410,28 @@
                     Name
                 </div>
 
+<<<<<<< HEAD
                 <div
                     class="info-value"
                     id="staffName"
                 >
                     IT Support Staff
                 </div>
+=======
+
+                <!-- AFTER -->
+            <div>
+                <h2 id="headerName">-</h2>
+                <p id="headerRole">IT Support Team</p>
+            </div>
+>>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
 
             </div>
 
 
             <div class="info-row">
 
+<<<<<<< HEAD
                 <div class="info-label">
                     Email
                 </div>
@@ -391,7 +443,52 @@
                     itadmin@company.com
                 </div>
 
+=======
+            <!-- INFORMATION -->
+
+            <!-- AFTER -->
+        <div class="info-section">
+            <h3>
+                Account Information
+            </h3>
+            
+            <div class="info-row">
+                <div class="info-label">
+                    Name
+>>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
             </div>
+            <div class="info-value" id="profileName">
+                    -
+            </div>
+        </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    Email
+                </div>
+                <div class="info-value" id="profileEmail">
+                    -
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    Role
+                </div>
+                <div class="info-value" id="profileRole">
+                    -
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    Department
+                </div>
+                <div class="info-value" id="profileDepartment">
+                    -
+                </div>
+            </div>
+        </div>
 
 
             <div class="info-row">
@@ -427,6 +524,7 @@
 
         </div>
 
+<<<<<<< HEAD
 
 
         <a
@@ -444,6 +542,37 @@
 
 
 <script src="/script.js"></script>
+=======
+    </main>
+    <script>
+        function loadStaffProfile() {
+            // Read the "staff" key saved by your staff-login.html
+            const rawData = localStorage.getItem("staff");
+
+            if (!rawData) {
+                alert("No active session found. Please log in first.");
+                window.location.href = "/staff-login.html";
+                return;
+            }
+
+            const staff = JSON.parse(rawData);
+
+            // Replace the '-' placeholders with data from database.xlsx
+            document.getElementById("headerName").textContent = staff.name || "-";
+            document.getElementById("headerRole").textContent = staff.role || "IT Support Team";
+            document.getElementById("profileName").textContent = staff.name || "-";
+            document.getElementById("profileEmail").textContent = staff.email || "-";
+            document.getElementById("profileRole").textContent = staff.role || "-";
+            document.getElementById("profileDepartment").textContent = staff.department || "-";
+        }
+
+        function logout() {
+            localStorage.removeItem("staff");
+        }
+
+        window.onload = loadStaffProfile;
+    </script>
+>>>>>>> f1327df8bf00a11cc04daad10c07365cd96e6c57
 
 </body>
 

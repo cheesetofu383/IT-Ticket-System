@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Panel - IT Support</title>
+
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .welcome {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 30px;
+        }
+
+        .welcome-text h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-text p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .new-ticket-button {
+            background: #1769aa;
+            color: white;
+
+            text-decoration: none;
+
+            padding: 13px 22px;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .new-ticket-button:hover {
+            background: #12578c;
+        }
+
+
+        /* =========================
+           SUMMARY CARDS
+        ========================= */
+
+        .summary-grid {
+            grid-template-columns:
+                repeat(3, 1fr);
+        }
+
+        /* =========================
+           EMPTY STATE
+        ========================= */
+
+        .empty-state {
+            text-align: center;
+
+            padding: 65px 25px;
+        }
+
+        .empty-icon {
+            width: 65px;
+            height: 65px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+
+            background: #eef6fc;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 28px;
+        }
+
+        .empty-state h3 {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .empty-button {
+            display: inline-block;
+
+            background: #1769aa;
+            color: white;
+
+            text-decoration: none;
+
+            padding: 12px 20px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .empty-button:hover {
+            background: #12578c;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-right {
+                gap: 12px;
+            }
+
+            .container {
+                margin: 30px auto;
+            }
+
+            .welcome {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-text h1 {
+                font-size: 27px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            IT Support
+        </div>
+
+        <div class="nav-right">
+
+            <a
+                href="/ticket-form.html"
+                class="nav-link"
+            >
+                Submit Ticket
+            </a>
+
+            <a
+                href="/"
+                class="nav-link"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <main class="container">
+
+
+        <!-- WELCOME -->
+
+        <section class="welcome">
+
+            <div class="welcome-text">
+
+                <h1>
+                    Welcome back!
+                </h1>
+
+                <p>
+                    Manage your IT support requests and track your tickets.
+                </p>
+
+            </div>
+
+
+            <a
+                href="/ticket-form.html"
+                class="new-ticket-button"
+            >
+                + Submit New Ticket
+            </a>
+
+        </section>
+
+
+
+        <!-- =========================
+             SUMMARY
+        ========================= -->
+
+        <section class="summary-grid">
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Total Tickets
+                </div>
+
+                <div
+                    class="summary-number"
+                    id="totalTickets"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Open Tickets
+                </div>
+
+                <div
+                    class="summary-number"
+                    id="openTickets"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Closed Tickets
+                </div>
+
+                <div
+                    class="summary-number"
+                    id="closedTickets"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             MY TICKETS
+        ========================= -->
+
+        <section class="tickets-card">
+
+
+            <div class="tickets-header">
+
+                <h2>
+                    My Tickets
+                </h2>
+
+                <span>
+                    Your submitted support requests
+                </span>
+
+            </div>
+
+
+            <!-- EMPTY STATE -->
+
+            <div
+                class="empty-state"
+                id="emptyState"
+            >
+
+                <div class="empty-icon">
+                    🎫
+                </div>
+
+                <h3>
+                    No tickets yet
+                </h3>
+
+                <p>
+                    When you submit a support request,
+                    it will appear here.
+                </p>
+
+                <a
+                    href="/ticket-form.html"
+                    class="empty-button"
+                >
+                    Submit Your First Ticket
+                </a>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+        const customer = localStorage.getItem("customer");
+
+        if (!customer) {
+            window.location.href = "/customer-login.html";
+            }
+        async function loadTickets() {
+
+            try {
+
+                /* GET LOGGED-IN CUSTOMER */
+
+                const customerData =
+                    localStorage.getItem("customer");
+
+
+                /* CHECK IF CUSTOMER IS LOGGED IN */
+
+                if (!customerData) {
+
+                    alert("Please log in first.");
+
+                    window.location.href =
+                        "/customer-login.html";
+
+                    return;
+
+                }
+
+
+                const customer =
+                    JSON.parse(customerData);
+
+
+                /* GET ONLY THIS CUSTOMER'S TICKETS */
+
+                const response = await fetch(
+                    "/api/tickets?customerId="
+                    + encodeURIComponent(customer.customerId)
+                );
+
+
+                const tickets =
+                    await response.json();
+
+
+                const emptyState =
+                    document.getElementById("emptyState");
+
+
+                const ticketsCard =
+                    document.querySelector(".tickets-card");
+
+
+                /* UPDATE SUMMARY NUMBERS */
+
+                document.getElementById("totalTickets").textContent =
+                    tickets.length;
+
+
+                document.getElementById("openTickets").textContent =
+                    tickets.filter(
+                        ticket => ticket["Status"] === "Open"
+                    ).length;
+
+
+                document.getElementById("closedTickets").textContent =
+                    tickets.filter(
+                        ticket => ticket["Status"] === "Closed"
+                    ).length;
+
+
+                /* NO TICKETS */
+
+                if (tickets.length === 0) {
+
+                    emptyState.style.display = "block";
+
+                    return;
+
+                }
+
+
+                /* REMOVE EMPTY MESSAGE */
+
+                emptyState.style.display = "none";
+
+
+                /* CREATE TICKET LIST */
+
+                const ticketList =
+                    document.createElement("div");
+
+
+                ticketList.style.padding =
+                    "0 30px 30px";
+
+
+                tickets.forEach(ticket => {
+
+                    const ticketItem =
+                        document.createElement("div");
+
+
+                    ticketItem.style.border =
+                        "1px solid #e5e7eb";
+
+
+                    ticketItem.style.borderRadius =
+                        "10px";
+
+
+                    ticketItem.style.padding =
+                        "20px";
+
+
+                    ticketItem.style.marginTop =
+                        "15px";
+
+
+                    ticketItem.innerHTML = `
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:20px;
+                        ">
+
+                            <div>
+
+                                <strong>
+                                    ${ticket["Ticket ID"]}
+                                </strong>
+
+                                <p style="
+                                    margin-top:8px;
+                                    color:#4b5563;
+                                ">
+                                    ${ticket["Issue"]}
+                                </p>
+
+                                <p style="
+                                    margin-top:8px;
+                                    font-size:13px;
+                                    color:#6b7280;
+                                ">
+                                    ${ticket["Support Type"] || "Support"}
+                                </p>
+
+                            </div>
+
+
+                            <div style="
+                                background:#eef6fc;
+                                color:#1769aa;
+                                padding:7px 12px;
+                                border-radius:20px;
+                                font-size:13px;
+                                font-weight:bold;
+                            ">
+
+                                ${ticket["Status"]}
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    ticketList.appendChild(ticketItem);
+
+                });
+
+
+                ticketsCard.appendChild(ticketList);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load tickets:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* LOAD TICKETS WHEN PAGE OPENS */
+
+        loadTickets();
+
+    </script>
+
+
+</body>
+
+</html>
+
+
