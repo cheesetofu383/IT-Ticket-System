@@ -119,6 +119,46 @@ function writeWorkbook(workbook) {
     return true;
 }
 
+
+function validateAppointmentDateTime(appointmentDate, appointmentTime, now = new Date()) {
+    if (!appointmentDate || !appointmentTime) {
+        return "Please select both an appointment date and time.";
+    }
+
+    const selectedDateTime = new Date(`${appointmentDate}T${appointmentTime}:00`);
+
+    if (Number.isNaN(selectedDateTime.getTime())) {
+        return "Please select a valid appointment date and time.";
+    }
+
+    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const selectedDate = new Date(
+        selectedDateTime.getFullYear(),
+        selectedDateTime.getMonth(),
+        selectedDateTime.getDate()
+    );
+
+    if (selectedDate < currentDate) {
+        return "Appointment date cannot be before today.";
+    }
+
+    if (selectedDateTime < now) {
+        return "Appointment time cannot be before the current time.";
+    }
+
+    const sameDay = selectedDate.getTime() === currentDate.getTime();
+
+    if (sameDay) {
+        const minimumAllowedStart = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+
+        if (selectedDateTime < minimumAllowedStart) {
+            return "Appointment must be at least 2 hours after the current time for same-day bookings.";
+        }
+    }
+
+    return null;
+}
+
 function normalizeEmail(value) {
     return String(value || "").trim().toLowerCase();
 }
@@ -762,6 +802,13 @@ app.post("/api/tickets", (req, res) => {
         const submittedCustomerId =
             req.body.customerId;
 
+        const supportTypeValue =
+            String(req.body.supportType || "").trim();
+
+        const isOnSiteSupportRequest =
+            supportTypeValue.toLowerCase() ===
+            "on-site support";
+
         const submittedEmail =
             String(req.body.email || "").trim();
 
@@ -821,16 +868,15 @@ app.post("/api/tickets", (req, res) => {
         ========================= */
 
         let appointmentDuration = null;
+        let originalAppointmentDuration = null;
+        let roundedDurationNotice = null;
         const onSiteSupportType =
             String(
                 req.body.onSiteSupportType || ""
             ).trim();
 
 
-        if (
-            req.body.supportType ===
-            "On-site Support"
-        ) {
+        if (isOnSiteSupportRequest) {
 
             if (!onSiteSupportType) {
 
@@ -841,6 +887,19 @@ app.post("/api/tickets", (req, res) => {
 
                 });
 
+            }
+
+            const appointmentDate = String(req.body.appointmentDate || "").trim();
+            const appointmentTime = String(req.body.appointmentTime || "").trim();
+            const appointmentValidationMessage = validateAppointmentDateTime(
+                appointmentDate,
+                appointmentTime
+            );
+
+            if (appointmentValidationMessage) {
+                return res.status(400).json({
+                    message: appointmentValidationMessage
+                });
             }
 
             let minimumHours = 0;
@@ -861,10 +920,12 @@ app.post("/api/tickets", (req, res) => {
                 });
             }
 
-            appointmentDuration =
+            originalAppointmentDuration =
                 parseFloat(
                     req.body.appointmentDuration
                 );
+
+            appointmentDuration = originalAppointmentDuration;
 
 
             /* =========================
@@ -889,7 +950,7 @@ app.post("/api/tickets", (req, res) => {
 
 
             /* =========================
-               CHECK 0.5 HOUR INCREMENTS
+               ROUND UP TO 0.5 HOUR INCREMENTS
             ========================= */
 
             if (
@@ -897,14 +958,14 @@ app.post("/api/tickets", (req, res) => {
                     appointmentDuration * 2
                 )
             ) {
+                const roundedDuration =
+                    Math.ceil(
+                        appointmentDuration * 2
+                    ) / 2;
 
-                return res.status(400).json({
-
-                    message:
-                        "Appointment duration must be in 0.5-hour increments."
-
-                });
-
+                appointmentDuration = roundedDuration;
+                roundedDurationNotice =
+                    `Duration was rounded up from ${originalAppointmentDuration} hour(s) to ${appointmentDuration} hour(s). This increases the credit cost to ${appointmentDuration} credit(s).`;
             }
 
         }
@@ -933,8 +994,7 @@ app.post("/api/tickets", (req, res) => {
 
         if (
             customer &&
-            req.body.supportType ===
-            "On-site Support" &&
+            isOnSiteSupportRequest &&
             currentCredits <
             appointmentDuration
         ) {
@@ -942,9 +1002,9 @@ app.post("/api/tickets", (req, res) => {
             return res.status(400).json({
 
                 message:
-                    "You only have " +
+                    "The customer only has " +
                     currentCredits +
-                    " credit(s), but you requested " +
+                    " credit(s), but requested " +
                     appointmentDuration +
                     " hour(s)."
 
@@ -963,8 +1023,7 @@ app.post("/api/tickets", (req, res) => {
 
         if (
             customer &&
-            req.body.supportType ===
-            "On-site Support"
+            isOnSiteSupportRequest
         ) {
 
             remainingCredits =
@@ -1036,12 +1095,11 @@ app.post("/api/tickets", (req, res) => {
                 req.body.issue || "",
 
             "Support Type":
-                req.body.supportType || "",
+                supportTypeValue,
 
             "On-site Support Type":
-                req.body.supportType ===
-                "On-site Support"
-                    ? req.body.onSiteSupportType || ""
+                isOnSiteSupportRequest
+                    ? onSiteSupportType
                     : "",
 
             "Status":
@@ -1051,14 +1109,12 @@ app.post("/api/tickets", (req, res) => {
                 "",
 
             "Appointment Date":
-                req.body.supportType ===
-                "On-site Support"
+                isOnSiteSupportRequest
                     ? req.body.appointmentDate
                     : "",
 
             "Appointment Time":
-                req.body.supportType ===
-                "On-site Support"
+                isOnSiteSupportRequest
                     ? req.body.appointmentTime
                     : "",
 
@@ -1121,13 +1177,23 @@ app.post("/api/tickets", (req, res) => {
         res.status(201).json({
 
             message:
+                roundedDurationNotice ||
                 "Ticket created successfully.",
 
             ticketId:
                 ticket["Ticket ID"],
 
             remainingCredits:
-                remainingCredits
+                remainingCredits,
+
+            originalDuration:
+                originalAppointmentDuration || null,
+
+            roundedDuration:
+                appointmentDuration,
+
+            roundUpApplied:
+                !!roundedDurationNotice
 
         });
 
@@ -1590,6 +1656,214 @@ app.delete(
 
             }
 
+            const ticketToDelete =
+                ticketsData[ticketIndex];
+
+            const supportType =
+                String(
+                    ticketToDelete["Support Type"] || ""
+                ).trim();
+
+            const ticketStatus =
+                String(
+                    ticketToDelete["Status"] || ""
+                ).trim();
+
+            const appointmentStatus =
+                String(
+                    ticketToDelete["Appointment Status"] || ""
+                ).trim();
+
+            const assignedEngineer =
+                String(
+                    ticketToDelete["Assigned Engineer"] || ""
+                ).trim();
+
+            const appointmentDuration =
+                Number(
+                    ticketToDelete["Appointment Duration"] || 0
+                );
+
+            const serviceResult =
+                String(
+                    ticketToDelete["Service Result"] || ""
+                ).trim();
+
+            const hasServiceReport =
+                (() => {
+                    const workbookReports =
+                        workbook.Sheets["ServiceReport"];
+
+                    if (!workbookReports) {
+                        return false;
+                    }
+
+                    const reportsData =
+                        XLSX.utils.sheet_to_json(
+                            workbookReports
+                        );
+
+                    return reportsData.some(
+                        report =>
+                            String(report["Ticket ID"] || "").trim() === ticketId
+                    );
+                })();
+
+            const activeStatuses =
+                ["open", "in progress"];
+
+            const pendingAppointmentStatuses =
+                ["pending", "reschedule required"];
+
+            const isOnSiteSupport =
+                supportType.toLowerCase() ===
+                "on-site support";
+
+            const isOpenOrInProgress =
+                activeStatuses.includes(
+                    ticketStatus.toLowerCase()
+                );
+
+            const isPendingOrReschedule =
+                pendingAppointmentStatuses.includes(
+                    appointmentStatus.toLowerCase()
+                );
+
+            const isServiceResultEmpty =
+                serviceResult === "";
+
+            const isServiceReportMissing =
+                !hasServiceReport;
+
+            const refundCheck = {
+                ticketId,
+                supportType,
+                ticketStatus,
+                appointmentStatus,
+                assignedEngineer,
+                appointmentDuration,
+                serviceResult,
+                hasServiceReport,
+                isOnSiteSupport,
+                isOpenOrInProgress,
+                isPendingOrReschedule,
+                isServiceResultEmpty,
+                isServiceReportMissing,
+                refundEligible:
+                    isOnSiteSupport &&
+                    isOpenOrInProgress &&
+                    isPendingOrReschedule &&
+                    isServiceResultEmpty &&
+                    isServiceReportMissing &&
+                    Number.isFinite(appointmentDuration) &&
+                    appointmentDuration > 0
+            };
+
+            console.log(
+                "Delete refund eligibility debug:",
+                JSON.stringify(refundCheck, null, 2)
+            );
+
+            let refundApplied = false;
+            let refundedCredits = 0;
+            const refundReasons = [];
+
+            if (!isOnSiteSupport) {
+                refundReasons.push("Support type is not On-site Support.");
+            }
+
+            if (!isOpenOrInProgress) {
+                refundReasons.push("Ticket status is not Open/In Progress.");
+            }
+
+            if (!isPendingOrReschedule) {
+                refundReasons.push("Appointment status is not Pending/Reschedule Required.");
+            }
+
+            if (!isServiceResultEmpty) {
+                refundReasons.push("Service result is not empty.");
+            }
+
+            if (!isServiceReportMissing) {
+                refundReasons.push("A service report already exists.");
+            }
+
+            if (
+                !Number.isFinite(appointmentDuration) ||
+                appointmentDuration <= 0
+            ) {
+                refundReasons.push("Appointment duration is invalid or zero.");
+            }
+
+            if (
+                isOnSiteSupport &&
+                isOpenOrInProgress &&
+                isPendingOrReschedule &&
+                isServiceResultEmpty &&
+                isServiceReportMissing &&
+                Number.isFinite(appointmentDuration) &&
+                appointmentDuration > 0
+            ) {
+                const customerWorksheet =
+                    workbook.Sheets["Customer"];
+
+                if (customerWorksheet) {
+                    const customersData =
+                        XLSX.utils.sheet_to_json(
+                            customerWorksheet
+                        );
+
+                    const customerId =
+                        String(
+                            ticketToDelete["Customer ID"] || ""
+                        ).trim();
+
+                    const customerEmail =
+                        String(
+                            ticketToDelete["Email"] || ""
+                        ).trim();
+
+                    let customerIndex = -1;
+                    let targetCustomer = null;
+
+                    if (customerId) {
+                        customerIndex = customersData.findIndex(
+                            customer =>
+                                String(customer["Customer ID"] || "").trim() === customerId
+                        );
+                    }
+
+                    if (customerIndex === -1 && customerEmail) {
+                        customerIndex = customersData.findIndex(
+                            customer =>
+                                String(customer["Email"] || "").trim().toLowerCase() === customerEmail.toLowerCase()
+                        );
+                    }
+
+                    if (customerIndex !== -1) {
+                        targetCustomer = customersData[customerIndex];
+
+                        const currentCredits =
+                            Number(
+                                targetCustomer["Credits"] || 0
+                            );
+
+                        refundedCredits =
+                            appointmentDuration;
+
+                        targetCustomer["Credits"] =
+                            currentCredits + refundedCredits;
+
+                        workbook.Sheets["Customer"] =
+                            XLSX.utils.json_to_sheet(
+                                customersData
+                            );
+
+                        refundApplied = true;
+                    }
+                }
+            }
+
 
             /* =========================
                DELETE TICKET
@@ -1611,14 +1885,30 @@ app.delete(
 
             console.log(
                 "Ticket deleted:",
-                ticketId
+                ticketId,
+                "Refund applied:",
+                refundApplied,
+                "Amount:",
+                refundedCredits
             );
+
+            if (!refundApplied && refundReasons.length > 0) {
+                console.log(
+                    "Refund skipped because:",
+                    refundReasons
+                );
+            }
 
 
             res.json({
 
                 message:
-                    "Ticket deleted successfully."
+                    refundApplied
+                        ? `Ticket deleted successfully. Customer refunded ${refundedCredits} credit(s).`
+                        : "Ticket deleted successfully.",
+
+                refundApplied,
+                refundedCredits
 
             });
 

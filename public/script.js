@@ -35,7 +35,7 @@ if (staffLoginForm) {
             document.getElementById("staffPassword").value;
 
         if (!email || !password) {
-            alert("Please enter your email and password.");
+            alert("Please enter the customer's email and password.");
             return;
         }
 
@@ -115,6 +115,17 @@ const appointmentDurationInput =
     document.getElementById("appointmentDuration");
 
 
+function roundUpToHalfHour(value) {
+    const numericValue = Number(value);
+
+    if (!Number.isFinite(numericValue)) {
+        return null;
+    }
+
+    return Math.ceil(numericValue * 2) / 2;
+}
+
+
 function getOnSiteDurationSettings(onSiteSupportType) {
 
     switch ((onSiteSupportType || "").trim()) {
@@ -143,6 +154,46 @@ function getOnSiteDurationSettings(onSiteSupportType) {
             return null;
     }
 
+}
+
+
+function validateAppointmentDateTime(appointmentDate, appointmentTime, now = new Date()) {
+    if (!appointmentDate || !appointmentTime) {
+        return "Please select both an appointment date and time.";
+    }
+
+    const selectedDateTime = new Date(`${appointmentDate}T${appointmentTime}:00`);
+
+    if (Number.isNaN(selectedDateTime.getTime())) {
+        return "Please select a valid appointment date and time.";
+    }
+
+    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const selectedDate = new Date(
+        selectedDateTime.getFullYear(),
+        selectedDateTime.getMonth(),
+        selectedDateTime.getDate()
+    );
+
+    if (selectedDate < currentDate) {
+        return "Appointment date cannot be before today.";
+    }
+
+    if (selectedDateTime < now) {
+        return "Appointment time cannot be before the current time.";
+    }
+
+    const sameDay = selectedDate.getTime() === currentDate.getTime();
+
+    if (sameDay) {
+        const minimumAllowedStart = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+
+        if (selectedDateTime < minimumAllowedStart) {
+            return "Appointment must be at least 2 hours after the current time for same-day bookings.";
+        }
+    }
+
+    return null;
 }
 
 
@@ -268,13 +319,17 @@ if (ticketForm) {
 
 
             const supportType =
-                document.getElementById("supportType")?.value || "";
+                String(
+                    document.getElementById("supportType")?.value || ""
+                ).trim();
 
             const onSiteSupportType =
-                document.getElementById("onSiteSupportType")?.value || "";
+                String(
+                    document.getElementById("onSiteSupportType")?.value || ""
+                ).trim();
 
             const isOnSite =
-                supportType.trim().toLowerCase() ===
+                supportType.toLowerCase() ===
                 "on-site support";
 
 
@@ -323,15 +378,44 @@ if (ticketForm) {
                         "appointmentDuration"
                     )?.value || null;
 
+                const appointmentValidationMessage = validateAppointmentDateTime(
+                    appointmentDate,
+                    appointmentTime
+                );
+
+                if (appointmentValidationMessage) {
+                    alert(appointmentValidationMessage);
+                    return;
+                }
+
+                const rawDuration = Number(appointmentDuration);
+                const roundedDuration = roundUpToHalfHour(rawDuration);
+
                 if (
                     !appointmentDuration ||
-                    Number(appointmentDuration) <
-                        onSiteSettings.minHours
+                    !Number.isFinite(rawDuration) ||
+                    rawDuration < onSiteSettings.minHours
                 ) {
                     alert(
                         `Duration is required for ${onSiteSupportType} and must be at least ${onSiteSettings.minHours} hour(s).`
                     );
                     return;
+                }
+
+                if (
+                    !Number.isInteger(rawDuration * 2)
+                ) {
+                    const updatedDuration =
+                        roundedDuration ?? rawDuration;
+
+                    document.getElementById("appointmentDuration").value =
+                        String(updatedDuration);
+
+                    appointmentDuration = String(updatedDuration);
+
+                    alert(
+                        `Duration was rounded up from ${rawDuration} hour(s) to ${updatedDuration} hour(s). This increases the credit cost to ${updatedDuration} credit(s).`
+                    );
                 }
 
             }
@@ -1474,9 +1558,19 @@ async function deleteTicket() {
 
         if (response.ok) {
 
-            alert(
+            const refundMessage =
+                result.refundApplied
+                    ? `Customer refunded ${result.refundedCredits ?? 0} credit(s).`
+                    : "";
+
+            const successMessage =
                 result.message ||
-                "Ticket deleted successfully."
+                "Ticket deleted successfully.";
+
+            alert(
+                refundMessage
+                    ? `${successMessage}\n${refundMessage}`
+                    : successMessage
             );
 
             window.location.href =
