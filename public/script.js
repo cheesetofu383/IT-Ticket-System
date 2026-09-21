@@ -111,6 +111,9 @@ const onSiteSupportTypeSelect =
 const durationField =
     document.getElementById("durationField");
 
+const durationLabel =
+    document.getElementById("durationLabel");
+
 const appointmentDurationInput =
     document.getElementById("appointmentDuration");
 
@@ -133,21 +136,30 @@ function getOnSiteDurationSettings(onSiteSupportType) {
         case "Maintenance":
             return {
                 minHours: 1,
-                label: "Minimum 1 hour"
+                label: "Minimum 1 hour",
+                unit: "hours",
+                step: "0.5",
+                minValue: 1
             };
 
-        case "TEMP":
+        case "Ad Hoc":
             return {
                 minHours: 2,
-                label: "Minimum 2 hours"
+                label: "Minimum 2 hours",
+                unit: "hours",
+                step: "0.5",
+                minValue: 1
             };
 
         case "Project":
-            // TODO: confirm the official project minimum with the supervisor.
-            // This default assumes a minimum of 6 hours until confirmed.
             return {
-                minHours: 6,
-                label: "Minimum 6 hours"
+                minHours: 0,
+                label: "Minimum 1 day",
+                unit: "days",
+                step: "1",
+                minValue: 1,
+                wholeNumberOnly: true,
+                skipCredits: true
             };
 
         default:
@@ -268,16 +280,25 @@ if (supportTypeSelect && appointmentSection) {
                 settings ? "block" : "none";
         }
 
+        if (durationLabel) {
+            const labelSuffix = settings?.unit === "days" ? "days" : "hours";
+            durationLabel.textContent = `Duration (${labelSuffix})`;
+        }
 
         if (appointmentDurationInput) {
             if (settings) {
                 appointmentDurationInput.min =
-                    String(settings.minHours);
+                    String(settings.minValue ?? settings.minHours ?? 1);
+                appointmentDurationInput.step =
+                    settings.step || "0.5";
                 appointmentDurationInput.placeholder =
-                    settings.label;
+                    settings.unit === "days"
+                        ? "Enter duration in days"
+                        : settings.label;
             } else {
                 appointmentDurationInput.value = "";
                 appointmentDurationInput.min = "1";
+                appointmentDurationInput.step = "0.5";
                 appointmentDurationInput.placeholder =
                     "Select an on-site support type";
             }
@@ -389,33 +410,50 @@ if (ticketForm) {
                 }
 
                 const rawDuration = Number(appointmentDuration);
-                const roundedDuration = roundUpToHalfHour(rawDuration);
 
-                if (
-                    !appointmentDuration ||
-                    !Number.isFinite(rawDuration) ||
-                    rawDuration < onSiteSettings.minHours
-                ) {
-                    alert(
-                        `Duration is required for ${onSiteSupportType} and must be at least ${onSiteSettings.minHours} hour(s).`
-                    );
-                    return;
-                }
+                if (onSiteSupportType === "Project") {
+                    if (
+                        !appointmentDuration ||
+                        !Number.isFinite(rawDuration) ||
+                        !Number.isInteger(rawDuration) ||
+                        rawDuration < 1
+                    ) {
+                        alert(
+                            "Project duration is required and must be a whole number of days (minimum 1 day)."
+                        );
+                        return;
+                    }
 
-                if (
-                    !Number.isInteger(rawDuration * 2)
-                ) {
-                    const updatedDuration =
-                        roundedDuration ?? rawDuration;
+                    appointmentDuration = String(rawDuration);
+                } else {
+                    const roundedDuration = roundUpToHalfHour(rawDuration);
 
-                    document.getElementById("appointmentDuration").value =
-                        String(updatedDuration);
+                    if (
+                        !appointmentDuration ||
+                        !Number.isFinite(rawDuration) ||
+                        rawDuration < onSiteSettings.minHours
+                    ) {
+                        alert(
+                            `Duration is required for ${onSiteSupportType} and must be at least ${onSiteSettings.minHours} hour(s).`
+                        );
+                        return;
+                    }
 
-                    appointmentDuration = String(updatedDuration);
+                    if (
+                        !Number.isInteger(rawDuration * 2)
+                    ) {
+                        const updatedDuration =
+                            roundedDuration ?? rawDuration;
 
-                    alert(
-                        `Duration was rounded up from ${rawDuration} hour(s) to ${updatedDuration} hour(s). This increases the credit cost to ${updatedDuration} credit(s).`
-                    );
+                        document.getElementById("appointmentDuration").value =
+                            String(updatedDuration);
+
+                        appointmentDuration = String(updatedDuration);
+
+                        alert(
+                            `Duration was rounded up from ${rawDuration} hour(s) to ${updatedDuration} hour(s). This increases the credit cost to ${updatedDuration} credit(s).`
+                        );
+                    }
                 }
 
             }

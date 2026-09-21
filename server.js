@@ -906,11 +906,10 @@ app.post("/api/tickets", (req, res) => {
 
             if (onSiteSupportType === "Maintenance") {
                 minimumHours = 1;
-            } else if (onSiteSupportType === "TEMP") {
+            } else if (onSiteSupportType === "Ad Hoc") {
                 minimumHours = 2;
             } else if (onSiteSupportType === "Project") {
-                // TODO: confirm the official project minimum with the supervisor.
-                minimumHours = 6;
+                minimumHours = 0;
             } else {
                 return res.status(400).json({
 
@@ -932,40 +931,53 @@ app.post("/api/tickets", (req, res) => {
                CHECK DURATION
             ========================= */
 
-            if (
-                !Number.isFinite(
-                    appointmentDuration
-                ) ||
-                appointmentDuration < minimumHours
-            ) {
+            if (onSiteSupportType === "Project") {
+                if (
+                    !Number.isFinite(appointmentDuration) ||
+                    !Number.isInteger(appointmentDuration) ||
+                    appointmentDuration < 1
+                ) {
+                    return res.status(400).json({
+                        message:
+                            "Project duration is required and must be a whole number of days (minimum 1 day)."
+                    });
+                }
+            } else {
+                if (
+                    !Number.isFinite(
+                        appointmentDuration
+                    ) ||
+                    appointmentDuration < minimumHours
+                ) {
 
-                return res.status(400).json({
+                    return res.status(400).json({
 
-                    message:
-                        `On-site Support (${onSiteSupportType}) requires a minimum duration of ${minimumHours} hour(s).`
+                        message:
+                            `On-site Support (${onSiteSupportType}) requires a minimum duration of ${minimumHours} hour(s).`
 
-                });
+                    });
 
-            }
+                }
 
 
-            /* =========================
-               ROUND UP TO 0.5 HOUR INCREMENTS
-            ========================= */
+                /* =========================
+                   ROUND UP TO 0.5 HOUR INCREMENTS
+                ========================= */
 
-            if (
-                !Number.isInteger(
-                    appointmentDuration * 2
-                )
-            ) {
-                const roundedDuration =
-                    Math.ceil(
+                if (
+                    !Number.isInteger(
                         appointmentDuration * 2
-                    ) / 2;
+                    )
+                ) {
+                    const roundedDuration =
+                        Math.ceil(
+                            appointmentDuration * 2
+                        ) / 2;
 
-                appointmentDuration = roundedDuration;
-                roundedDurationNotice =
-                    `Duration was rounded up from ${originalAppointmentDuration} hour(s) to ${appointmentDuration} hour(s). This increases the credit cost to ${appointmentDuration} credit(s).`;
+                    appointmentDuration = roundedDuration;
+                    roundedDurationNotice =
+                        `Duration was rounded up from ${originalAppointmentDuration} hour(s) to ${appointmentDuration} hour(s). This increases the credit cost to ${appointmentDuration} credit(s).`;
+                }
             }
 
         }
@@ -995,6 +1007,7 @@ app.post("/api/tickets", (req, res) => {
         if (
             customer &&
             isOnSiteSupportRequest &&
+            onSiteSupportType !== "Project" &&
             currentCredits <
             appointmentDuration
         ) {
@@ -1023,7 +1036,8 @@ app.post("/api/tickets", (req, res) => {
 
         if (
             customer &&
-            isOnSiteSupportRequest
+            isOnSiteSupportRequest &&
+            onSiteSupportType !== "Project"
         ) {
 
             remainingCredits =
