@@ -1,10 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Submit Ticket - IT Support</title>
 
@@ -19,21 +24,27 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
             background: #f4f7fb;
-            min-height: 100vh;
             color: #1f2937;
+            min-height: 100vh;
         }
 
 
-        /* NAVBAR */
+        /* =========================
+           NAVBAR
+        ========================= */
 
         .navbar {
             height: 70px;
+
             background: white;
+
+            border-bottom: 1px solid #e5e7eb;
+
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             padding: 0 50px;
-            border-bottom: 1px solid #e5e7eb;
         }
 
         .logo {
@@ -42,177 +53,188 @@
             color: #1769aa;
         }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .nav-link {
+        .back-link {
             text-decoration: none;
             color: #4b5563;
             font-size: 14px;
         }
 
-        .nav-link:hover {
+        .back-link:hover {
             color: #1769aa;
         }
 
 
-        /* MAIN */
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
 
         .container {
-            max-width: 900px;
-            margin: 50px auto;
+            max-width: 700px;
+
+            margin: 45px auto;
+
             padding: 0 25px;
         }
 
-        .page-header {
-            margin-bottom: 30px;
-        }
 
-        .page-header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .page-header p {
-            color: #6b7280;
-            font-size: 15px;
-        }
-
-
-        /* FORM CARD */
+        /* =========================
+           FORM CARD
+        ========================= */
 
         .form-card {
             background: white;
+
+            padding: 35px;
+
             border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.06);
         }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
+        h1 {
+            font-size: 28px;
+
+            margin-bottom: 8px;
         }
 
-        .form-row {
-            display: flex;
-            gap: 20px;
+        .subtitle {
+            color: #6b7280;
+
+            font-size: 14px;
+
+            margin-bottom: 30px;
         }
+
+
+        /* =========================
+           FORM GROUP
+        ========================= */
 
         .form-group {
-            flex: 1;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
+
             font-size: 14px;
-            font-weight: 600;
+
+            font-weight: bold;
+
             margin-bottom: 8px;
         }
 
-        .required {
-            color: #dc2626;
-        }
-
-
-        /* INPUTS */
-
         input,
-        select,
-        textarea {
+        textarea,
+        select {
             width: 100%;
-            padding: 13px 14px;
+
+            padding: 12px 14px;
+
             border: 1px solid #d1d5db;
-            border-radius: 9px;
-            font-size: 15px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
             font-family: Arial, Helvetica, sans-serif;
+
             outline: none;
-            transition: 0.2s;
         }
 
         input:focus,
-        select:focus,
-        textarea:focus {
+        textarea:focus,
+        select:focus {
             border-color: #1769aa;
-            box-shadow: 0 0 0 3px rgba(23, 105, 170, 0.1);
         }
 
         textarea {
-            min-height: 140px;
+            min-height: 130px;
+
             resize: vertical;
         }
 
-        .help-text {
-            margin-top: 6px;
-            font-size: 12px;
-            color: #6b7280;
-        }
 
-
-        /* APPOINTMENT */
+        /* =========================
+           APPOINTMENT SECTION
+        ========================= */
 
         #appointmentSection {
             display: none;
-        }
 
-
-        /* BUTTONS */
-
-        .button-area {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
             margin-top: 10px;
-            padding-top: 25px;
-            border-top: 1px solid #e5e7eb;
+
+            padding: 20px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 10px;
         }
 
-        .cancel-button {
-            padding: 13px 22px;
-            border: 1px solid #d1d5db;
-            border-radius: 9px;
-            background: white;
-            color: #374151;
-            font-size: 15px;
-            cursor: pointer;
+        #appointmentSection h3 {
+            font-size: 16px;
+
+            margin-bottom: 18px;
         }
 
-        .cancel-button:hover {
-            background: #f9fafb;
-        }
 
-        .submit-button {
-            padding: 13px 25px;
+        /* =========================
+           SUBMIT BUTTON
+        ========================= */
+
+        button {
+            width: 100%;
+
+            padding: 13px;
+
             border: none;
-            border-radius: 9px;
+
+            border-radius: 8px;
+
             background: #1769aa;
+
             color: white;
+
             font-size: 15px;
+
             font-weight: bold;
+
             cursor: pointer;
+
+            margin-top: 10px;
         }
 
-        .submit-button:hover {
+        button:hover {
             background: #12578c;
         }
 
 
-        /* MOBILE */
+        /* =========================
+           MESSAGE
+        ========================= */
 
-        @media (max-width: 700px) {
+        #ticketMessage {
+            margin-top: 20px;
+
+            font-size: 14px;
+
+            color: #1769aa;
+
+            text-align: center;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 650px) {
 
             .navbar {
                 padding: 0 20px;
-            }
-
-            .nav-link {
-                display: none;
             }
 
             .container {
@@ -221,15 +243,6 @@
 
             .form-card {
                 padding: 25px;
-            }
-
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            .page-header h1 {
-                font-size: 27px;
             }
 
         }
@@ -242,7 +255,9 @@
 <body>
 
 
-    <!-- NAVBAR -->
+    <!-- =========================
+         NAVBAR
+    ========================= -->
 
     <nav class="navbar">
 
@@ -250,84 +265,72 @@
             IT Support
         </div>
 
-        <div class="nav-right">
-
-            <a href="/customer.html" class="nav-link">
-                Customer Panel
-            </a>
-
-            <a href="/" class="nav-link">
-                Logout
-            </a>
-
-        </div>
+        <a
+            href="/staff.html"
+            class="back-link"
+        >
+            ← Back to Staff Portal
+        </a>
 
     </nav>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- =========================
+         MAIN
+    ========================= -->
 
     <main class="container">
 
-        <div class="page-header">
+        <div class="form-card">
 
             <h1>
                 Submit a Support Ticket
             </h1>
 
-            <p>
-                Tell us about your IT issue and we'll help you resolve it.
+            <p class="subtitle">
+                Tell us about your IT issue and our support team will assist you.
             </p>
 
-        </div>
 
-
-        <div class="form-card">
-
-            <div class="section-title">
-                Ticket Information
-            </div>
-
+            <!-- =========================
+                 TICKET FORM
+            ========================= -->
 
             <form id="ticketForm">
 
 
-                <!-- CUSTOMER INFORMATION -->
+                <!-- CUSTOMER NAME -->
 
-                <div class="form-row">
+                <div class="form-group">
 
-                    <div class="form-group">
+                    <label for="customerName">
+                        Customer Name
+                    </label>
 
-                        <label for="customerName">
-                            Full Name <span class="required">*</span>
-                        </label>
+                    <input 
+    type="text" 
+    id="customerName" 
+    placeholder="Customer name" 
+    required
+>
 
-                        <input
-                            type="text"
-                            id="customerName"
-                            placeholder="Enter your full name"
-                            readonly
-                            required
-                        >
-
-                    </div>
+                </div>
 
 
-                    <div class="form-group">
+                <!-- EMAIL -->
 
-                        <label for="email">
-                            Email Address <span class="required">*</span>
-                        </label>
+                <div class="form-group">
 
-                        <input
-                            type="email"
-                            id="email"
-                            placeholder="you@example.com"
-                            readonly
-                            required
-                        >
+                    <label for="email">
+                        Email
+                    </label>
 
-                    </div>
+                    <input 
+    type="email" 
+    id="email" 
+    placeholder="Customer email" 
+    required
+>
 
                 </div>
 
@@ -337,18 +340,14 @@
                 <div class="form-group">
 
                     <label for="issue">
-                        Describe Your Issue <span class="required">*</span>
+                        Describe Your Issue
                     </label>
 
                     <textarea
                         id="issue"
-                        placeholder="Please describe the IT problem you are experiencing..."
+                        placeholder="Please describe the IT issue you are experiencing..."
                         required
                     ></textarea>
-
-                    <div class="help-text">
-                        Please provide as much detail as possible so our IT team can assist you.
-                    </div>
 
                 </div>
 
@@ -358,10 +357,13 @@
                 <div class="form-group">
 
                     <label for="supportType">
-                        Support Type <span class="required">*</span>
+                        Support Type
                     </label>
 
-                    <select id="supportType" required>
+                    <select
+                        id="supportType"
+                        required
+                    >
 
                         <option value="">
                             Select support type
@@ -388,65 +390,80 @@
                 </div>
 
 
-                <!-- APPOINTMENT -->
+                <!-- =========================
+                     APPOINTMENT SECTION
+                ========================= -->
 
                 <div id="appointmentSection">
 
-    <label for="appointmentDate">
-        Appointment Date
-    </label>
+                    <h3>
+                        On-site Support Appointment
+                    </h3>
 
-    <input
-        type="date"
-        id="appointmentDate"
-        required
-    >
 
-    <label for="appointmentTime">
-        Start Time
-    </label>
+                    <!-- DATE -->
 
-    <input
-        type="time"
-        id="appointmentTime"
-        required
-    >
+                    <div class="form-group">
 
-    <label for="appointmentDuration">
-    Duration (hours)
-</label>
+                        <label for="appointmentDate">
+                            Appointment Date
+                        </label>
 
-<input
-    type="number"
-    id="appointmentDuration"
-    min="2"
-    step="0.5"
-    placeholder="Enter number of hours"
-    required
->
+                        <input
+                            type="date"
+                            id="appointmentDate"
+                        >
 
-</div>
+                    </div>
 
-                <!-- BUTTONS -->
 
-                <div class="button-area">
+                    <!-- TIME -->
 
-                    <button
-                        type="button"
-                        class="cancel-button"
-                        onclick="window.location.href='/customer.html'"
-                    >
-                        Cancel
-                    </button>
+                    <div class="form-group">
 
-                    <button
-                        type="submit"
-                        class="submit-button"
-                    >
-                        Submit Ticket
-                    </button>
+                        <label for="appointmentTime">
+                            Appointment Time
+                        </label>
+
+                        <input
+                            type="time"
+                            id="appointmentTime"
+                        >
+
+                    </div>
+
+
+                    <!-- DURATION -->
+
+                    <div class="form-group">
+
+                        <label for="appointmentDuration">
+                            Duration (hours)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="appointmentDuration"
+                            min="2"
+                            step="0.5"
+                            placeholder="Minimum 2 hours"
+                        >
+
+                    </div>
 
                 </div>
+
+
+                <!-- SUBMIT -->
+
+                <button type="submit">
+                    Submit Ticket
+                </button>
+
+
+                <!-- MESSAGE -->
+
+                <div id="ticketMessage"></div>
 
 
             </form>
@@ -456,266 +473,11 @@
     </main>
 
 
-    <!-- JAVASCRIPT -->
-
-    <script>
-
-    /* GET LOGGED-IN CUSTOMER */
-
-    const customerData = localStorage.getItem("customer");
-
-    if (!customerData) {
-
-        alert("Please log in first.");
-
-        window.location.href = "/customer-login.html";
-
-    }
-
-    const customer = JSON.parse(customerData);
-
-
-    /* AUTO-FILL CUSTOMER INFORMATION */
-
-    document.getElementById("customerName").value = customer.name;
-    document.getElementById("email").value = customer.email;
-
-
-    /* APPOINTMENT ELEMENTS */
-
-    const supportType = document.getElementById("supportType");
-    const appointmentSection = document.getElementById("appointmentSection");
-    const appointmentDate = document.getElementById("appointmentDate");
-    const appointmentTime = document.getElementById("appointmentTime");
-
-    const ticketForm = document.getElementById("ticketForm");
-
-
-    /* SHOW APPOINTMENT FIELDS ONLY FOR ON-SITE SUPPORT */
-
-    supportType.addEventListener("change", function () {
-
-    if (supportType.value === "On-site Support") {
-
-        // Get logged-in customer
-        const customer = JSON.parse(
-            localStorage.getItem("customer")
-        );
-
-        // Check customer credits
-        const credits = customer?.credits || 0;
-
-        if (credits <= 0) {
-
-            alert(
-                "You do not have enough credits to schedule On-site Support."
-            );
-
-            // Reset support type
-            supportType.value = "";
-
-            // Hide appointment section
-            appointmentSection.style.display = "none";
-
-            appointmentDate.required = false;
-            appointmentTime.required = false;
-
-            return;
-
-        }
-
-        // Customer has credits
-        appointmentSection.style.display = "block";
-
-        appointmentDate.required = true;
-        appointmentTime.required = true;
-
-    } else {
-
-        appointmentSection.style.display = "none";
-
-        appointmentDate.required = false;
-        appointmentTime.required = false;
-
-        appointmentDate.value = "";
-        appointmentTime.value = "";
-
-    }
-
-});
-
-
-    /* SUBMIT TICKET */
-ticketForm.addEventListener("submit", async function (event) {
-
-    event.preventDefault();
-
-
-    /* =========================
-       MAKE SURE CUSTOMER IS LOGGED IN
-    ========================= */
-
-    const customerData = localStorage.getItem("customer");
-
-    if (!customerData) {
-
-        alert("Please log in first.");
-
-        window.location.href = "/customer-login.html";
-
-        return;
-
-    }
-
-    const customer = JSON.parse(customerData);
-
-
-    /* =========================
-       GET FORM VALUES
-    ========================= */
-
-    const supportType =
-        document.getElementById("supportType").value;
-
-    const appointmentDate =
-        document.getElementById("appointmentDate").value;
-
-    const appointmentTime =
-        document.getElementById("appointmentTime").value;
-
-    const appointmentDuration =
-    parseFloat(
-        document.getElementById("appointmentDuration").value
-    );
-    if (
-    supportType === "On-site Support" &&
-    (!appointmentDuration || appointmentDuration < 2)
-) {
-
-    alert("Please enter a duration of at least 2 hours.");
-
-    return;
-
-}
-
-
-    /* =========================
-       CHECK CREDITS
-    ========================= */
-
-    const credits = Number(customer.credits || 0);
-
-    if (
-        supportType === "On-site Support" &&
-        credits < appointmentDuration
-    ) {
-
-        alert(
-            "You only have " +
-            credits +
-            " credit(s), but you requested " +
-            appointmentDuration +
-            " hour(s)."
-        );
-
-        return;
-
-    }
-
-
-    /* =========================
-       CREATE TICKET
-    ========================= */
-
-    const ticket = {
-
-        customerId:
-            customer.customerId,
-
-        customerName:
-            customer.name,
-
-        email:
-            customer.email,
-
-        issue:
-            document.getElementById("issue").value,
-
-        supportType:
-            supportType,
-
-        appointmentDate:
-            supportType === "On-site Support"
-                ? appointmentDate
-                : null,
-
-        appointmentTime:
-            supportType === "On-site Support"
-                ? appointmentTime
-                : null,
-
-        appointmentDuration:
-            supportType === "On-site Support"
-                ? appointmentDuration
-                : null
-
-    };
-
-
-    /* =========================
-       SEND TICKET TO SERVER
-    ========================= */
-
-    try {
-
-        const response = await fetch("/api/tickets", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify(ticket)
-
-        });
-
-
-        const data = await response.json();
-
-
-        if (response.ok) {
-
-            alert(
-                "Ticket submitted successfully!\n\nTicket ID: "
-                + data.ticketId
-            );
-
-            window.location.href = "/customer.html";
-
-        } else {
-
-            alert(
-                data.message ||
-                "Failed to submit ticket."
-            );
-
-        }
-
-
-    } catch (error) {
-
-        console.error("Error:", error);
-
-        alert(
-            "Unable to submit the ticket. Please try again."
-        );
-
-    }
-
-});
-
-</script>
+    <!-- =========================
+         MAIN JAVASCRIPT
+    ========================= -->
+
+    <script src="/script.js"></script>
 
 
 </body>

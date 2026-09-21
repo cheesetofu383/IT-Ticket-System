@@ -60,7 +60,7 @@
             color: #1769aa;
         }
 
-        .login-button {
+        .staff-login-link {
             padding: 10px 18px;
 
             border: 1px solid #1769aa;
@@ -420,7 +420,7 @@
 
         @media (max-width: 600px) {
 
-            .nav-links a:not(.login-button) {
+            .nav-links a:not(.staff-login-link) {
                 display: none;
             }
 
@@ -438,6 +438,7 @@
 
             footer {
                 flex-direction: column;
+
                 gap: 10px;
             }
 
@@ -473,12 +474,8 @@
                 About
             </a>
 
-            <a href="/customer-login.html" class="login-button">
-            Customer Login
-            </a>
-
             <a href="/staff-login.html" class="staff-login-link">
-            Staff Login
+                Staff Login
             </a>
 
         </div>
@@ -502,13 +499,13 @@
             </h1>
 
             <p>
-                Submit support requests, track your tickets,
-                manage appointments, and stay updated on your
-                IT service requests from one simple portal.
+                Manage IT support requests, customer information,
+                engineer appointments, and service records from
+                one simple system.
             </p>
 
             <a
-                href="/customer-login.html"
+                href="/staff-login.html"
                 class="get-started"
             >
                 Get Started
@@ -630,12 +627,12 @@
                 </div>
 
                 <h3>
-                    Submit Tickets
+                    Create Tickets
                 </h3>
 
                 <p>
-                    Report IT problems and submit support
-                    requests through an easy-to-use ticket form.
+                    IT staff can create tickets on behalf of customers
+                    and record their support requests.
                 </p>
 
             </div>
@@ -648,12 +645,12 @@
                 </div>
 
                 <h3>
-                    Track Tickets
+                    Manage Tickets
                 </h3>
 
                 <p>
-                    Check your ticket status and see updates
-                    on your support requests.
+                    IT staff can track ticket status, assignments,
+                    appointments, and service progress.
                 </p>
 
             </div>
@@ -670,8 +667,8 @@
                 </h3>
 
                 <p>
-                    View your appointment details and keep track
-                    of scheduled IT engineer visits.
+                    Schedule engineer appointments and check
+                    engineer availability before confirming a visit.
                 </p>
 
             </div>
@@ -730,12 +727,12 @@
                 </div>
 
                 <h3>
-                    Create an Account
+                    Record Customer Request
                 </h3>
 
                 <p>
-                    Sign up for a customer account
-                    to access the support portal.
+                    IT staff enter the customer's information
+                    and support request into the system.
                 </p>
 
             </div>
@@ -748,12 +745,12 @@
                 </div>
 
                 <h3>
-                    Submit a Request
+                    Create Ticket
                 </h3>
 
                 <p>
-                    Tell the IT team about your issue
-                    or service request.
+                    The system creates a ticket and records
+                    the customer's support requirements.
                 </p>
 
             </div>
@@ -766,12 +763,12 @@
                 </div>
 
                 <h3>
-                    Get Support
+                    Schedule Support
                 </h3>
 
                 <p>
-                    Your request is reviewed and
-                    handled by the IT support team.
+                    Staff select an engineer and appointment
+                    time based on availability.
                 </p>
 
             </div>
@@ -784,12 +781,12 @@
                 </div>
 
                 <h3>
-                    Track the Result
+                    Complete Service
                 </h3>
 
                 <p>
-                    View the progress and final service
-                    result from your portal.
+                    The engineer completes the service and
+                    staff record the service result.
                 </p>
 
             </div>
@@ -805,18 +802,19 @@
     <section class="cta" id="about">
 
         <h2>
-            Need IT support?
+            Manage IT Support
         </h2>
 
         <p>
-            Get started and submit your support request today.
+            Create and manage customer support requests
+            from one central system.
         </p>
 
         <a
-            href="/customer-login.html"
+            href="/staff-login.html"
             class="get-started"
         >
-            Get Started
+            Staff Login
         </a>
 
     </section>
@@ -840,4 +838,3 @@
 </body>
 
 </html>
-

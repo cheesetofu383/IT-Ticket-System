@@ -1,1048 +1,746 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ticket Details - IT Support</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
+<title>Ticket Details - IT Support</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
-            min-height: 100vh;
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+        min-height: 100vh;
+    }
 
-        /* =========================
-           NAVBAR
-        ========================= */
+    /* =========================
+       NAVBAR
+    ========================= */
 
-        .navbar {
-            height: 70px;
+    .navbar {
+        height: 70px;
 
-            background: white;
+        background: white;
 
-            border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-            padding: 0 50px;
-        }
+        padding: 0 50px;
+    }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
 
-            color: #1769aa;
-        }
+        color: #1769aa;
+    }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
 
-        .nav-link {
-            text-decoration: none;
+    .nav-link {
+        text-decoration: none;
 
-            color: #4b5563;
+        color: #4b5563;
 
-            font-size: 14px;
-        }
+        font-size: 14px;
+    }
 
-        .nav-link:hover {
-            color: #1769aa;
-        }
+    .nav-link:hover {
+        color: #1769aa;
+    }
 
+    /* =========================
+       MAIN
+    ========================= */
 
-        /* =========================
-           MAIN
-        ========================= */
+    .container {
+        max-width: 1100px;
 
-        .container {
-            max-width: 1100px;
+        margin: 45px auto;
 
-            margin: 45px auto;
+        padding: 0 25px;
+    }
 
-            padding: 0 25px;
-        }
+    /* =========================
+       BACK BUTTON
+    ========================= */
 
+    .back-link {
+        display: inline-block;
 
-        /* =========================
-           BACK BUTTON
-        ========================= */
+        margin-bottom: 20px;
 
-        .back-link {
-            display: inline-block;
+        color: #1769aa;
 
-            margin-bottom: 20px;
+        text-decoration: none;
 
-            color: #1769aa;
+        font-size: 14px;
 
-            text-decoration: none;
+        font-weight: bold;
+    }
 
-            font-size: 14px;
+    .back-link:hover {
+        text-decoration: underline;
+    }
 
-            font-weight: bold;
-        }
+    /* =========================
+       HEADER
+    ========================= */
 
-        .back-link:hover {
-            text-decoration: underline;
-        }
+    .ticket-header {
+        background: white;
 
+        border-radius: 16px;
 
-        /* =========================
-           HEADER
-        ========================= */
+        padding: 30px;
 
-        .ticket-header {
-            background: white;
+        margin-bottom: 25px;
 
-            border-radius: 16px;
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.06);
 
-            padding: 30px;
+        display: flex;
 
-            margin-bottom: 25px;
+        justify-content: space-between;
 
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.06);
+        align-items: flex-start;
 
-            display: flex;
+        gap: 20px;
+    }
 
-            justify-content: space-between;
+    .ticket-header h1 {
+        font-size: 27px;
 
-            align-items: flex-start;
+        margin-bottom: 8px;
+    }
 
-            gap: 20px;
-        }
+    .ticket-id {
+        color: #6b7280;
 
-        .ticket-header h1 {
-            font-size: 27px;
+        font-size: 14px;
+    }
 
-            margin-bottom: 8px;
-        }
+    .status {
+        display: inline-block;
 
-        .ticket-id {
-            color: #6b7280;
+        padding: 8px 14px;
 
-            font-size: 14px;
-        }
+        border-radius: 20px;
 
-        .status {
-            display: inline-block;
+        background: #eef6fc;
 
-            padding: 8px 14px;
+        color: #1769aa;
 
-            border-radius: 20px;
+        font-size: 13px;
 
-            background: #eef6fc;
+        font-weight: bold;
+    }
 
-            color: #1769aa;
+    /* =========================
+       GRID
+    ========================= */
 
-            font-size: 13px;
+    .content-grid {
+        display: grid;
 
-            font-weight: bold;
-        }
+        grid-template-columns:
+            2fr 1fr;
 
+        gap: 25px;
+    }
 
-        /* =========================
-           GRID
-        ========================= */
+    /* =========================
+       CARDS
+    ========================= */
+
+    .card {
+        background: white;
+
+        border-radius: 16px;
+
+        padding: 30px;
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.06);
+
+        margin-bottom: 25px;
+    }
+
+    .card h2 {
+        font-size: 20px;
+
+        margin-bottom: 25px;
+    }
+
+    /* =========================
+       INFORMATION
+    ========================= */
+
+    .info-row {
+        display: grid;
+
+        grid-template-columns: 160px 1fr;
+
+        gap: 15px;
+
+        padding: 15px 0;
+
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #6b7280;
+
+        font-size: 14px;
+
+        font-weight: bold;
+    }
+
+    .info-value {
+        font-size: 14px;
+
+        color: #374151;
+    }
+
+    /* =========================
+       FORM
+    ========================= */
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+
+        margin-bottom: 8px;
+
+        font-size: 14px;
+
+        font-weight: bold;
+    }
+
+    select,
+    textarea {
+        width: 100%;
+
+        padding: 12px 14px;
+
+        border: 1px solid #d1d5db;
+
+        border-radius: 8px;
+
+        font-size: 14px;
+
+        font-family: Arial, Helvetica, sans-serif;
+
+        outline: none;
+    }
+
+    select:focus,
+    textarea:focus {
+        border-color: #1769aa;
+    }
+
+    textarea {
+        min-height: 120px;
+
+        resize: vertical;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .button-group {
+        display: flex;
+
+        gap: 10px;
+    }
+
+    .button {
+        border: none;
+
+        border-radius: 8px;
+
+        padding: 12px 18px;
+
+        font-size: 14px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+    }
+
+    .save-button {
+        background: #1769aa;
+
+        color: white;
+    }
+
+    .save-button:hover {
+        background: #12578c;
+    }
+
+    .delete-button {
+        background: #dc2626;
+
+        color: white;
+    }
+
+    .delete-button:hover {
+        background: #b91c1c;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 800px) {
 
         .content-grid {
-            display: grid;
-
-            grid-template-columns:
-                2fr 1fr;
-
-            gap: 25px;
+            grid-template-columns: 1fr;
         }
 
-
-        /* =========================
-           CARDS
-        ========================= */
-
-        .card {
-            background: white;
-
-            border-radius: 16px;
-
-            padding: 30px;
-
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.06);
-
-            margin-bottom: 25px;
+        .ticket-header {
+            flex-direction: column;
         }
 
-        .card h2 {
-            font-size: 20px;
-
-            margin-bottom: 25px;
+        .navbar {
+            padding: 0 20px;
         }
 
-
-        /* =========================
-           INFORMATION
-        ========================= */
-
-        .info-row {
-            display: grid;
-
-            grid-template-columns: 160px 1fr;
-
-            gap: 15px;
-
-            padding: 15px 0;
-
-            border-bottom: 1px solid #f0f0f0;
+        .container {
+            margin: 30px auto;
         }
 
-        .info-row:last-child {
-            border-bottom: none;
-        }
+    }
 
-        .info-label {
-            color: #6b7280;
+</style>
 
-            font-size: 14px;
-
-            font-weight: bold;
-        }
-
-        .info-value {
-            font-size: 14px;
-
-            color: #374151;
-        }
-
-
-        /* =========================
-           FORM
-        ========================= */
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-size: 14px;
-
-            font-weight: bold;
-        }
-
-        select,
-        textarea {
-            width: 100%;
-
-            padding: 12px 14px;
-
-            border: 1px solid #d1d5db;
-
-            border-radius: 8px;
-
-            font-size: 14px;
-
-            font-family: Arial, Helvetica, sans-serif;
-
-            outline: none;
-        }
-
-        select:focus,
-        textarea:focus {
-            border-color: #1769aa;
-        }
-
-        textarea {
-            min-height: 120px;
-
-            resize: vertical;
-        }
-
-
-        /* =========================
-           BUTTONS
-        ========================= */
-
-        .button-group {
-            display: flex;
-
-            gap: 10px;
-        }
-
-        .button {
-            border: none;
-
-            border-radius: 8px;
-
-            padding: 12px 18px;
-
-            font-size: 14px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-        .save-button {
-            background: #1769aa;
-
-            color: white;
-        }
-
-        .save-button:hover {
-            background: #12578c;
-        }
-        
-        .delete-button {
-    background: #dc2626;
-    color: white;
-}
-
-.delete-button:hover {
-    background: #b91c1c;
-}
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 800px) {
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .ticket-header {
-                flex-direction: column;
-            }
-
-            .navbar {
-                padding: 0 20px;
-            }
-
-            .container {
-                margin: 30px auto;
-            }
-
-        }
-
-    </style>
 
 </head>
-
 
 <body>
 
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
+<!-- =========================
+     NAVBAR
+========================= -->
 
-    <nav class="navbar">
+<nav class="navbar">
 
-        <div class="logo">
-            IT Support
-        </div>
-
-
-        <div class="nav-right">
-
-            <a
-                href="/staff.html"
-                class="nav-link"
-            >
-                Dashboard
-            </a>
-
-            <a
-                href="/staff-profile.html"
-                class="nav-link"
-            >
-                Staff Profile
-            </a>
-
-            <a
-                href="/"
-                class="nav-link"
-            >
-                Logout
-            </a>
-
-        </div>
-
-    </nav>
+    <div class="logo">
+        IT Support
+    </div>
 
 
-
-    <!-- =========================
-         MAIN
-    ========================= -->
-
-    <main class="container">
-
+    <div class="nav-right">
 
         <a
             href="/staff.html"
-            class="back-link"
+            class="nav-link"
         >
-            ← Back to Dashboard
+            Dashboard
         </a>
 
+        <a
+            href="/staff-profile.html"
+            class="nav-link"
+        >
+            Staff Profile
+        </a>
+
+        <a
+            href="/"
+            class="nav-link"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</nav>
 
 
-        <!-- =========================
-             TICKET HEADER
-        ========================= -->
 
-        <section class="ticket-header">
+<!-- =========================
+     MAIN
+========================= -->
 
-            <div>
+<main class="container">
 
-                <h1>
-                    Ticket Details
-                </h1>
 
-                <div
-                    class="ticket-id"
-                    id="ticketId"
-                >
-                    Ticket ID
-                </div>
+    <a
+        href="/staff.html"
+        class="back-link"
+    >
+        ← Back to Dashboard
+    </a>
 
-            </div>
 
+
+    <!-- =========================
+         TICKET HEADER
+    ========================= -->
+
+    <section class="ticket-header">
+
+        <div>
+
+            <h1>
+                Ticket Details
+            </h1>
 
             <div
-                class="status"
-                id="ticketStatus"
+                class="ticket-id"
+                id="ticketId"
             >
-                Open
+                Ticket ID
             </div>
 
-        </section>
+        </div>
 
+
+        <div
+            class="status"
+            id="ticketStatus"
+        >
+            Open
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <div class="content-grid">
 
 
         <!-- =========================
-             CONTENT
+             LEFT SIDE
         ========================= -->
 
-        <div class="content-grid">
+        <div>
 
 
-            <!-- =========================
-                 LEFT SIDE
-            ========================= -->
+            <!-- CUSTOMER INFORMATION -->
 
-            <div>
+            <section class="card">
 
-
-                <!-- CUSTOMER INFORMATION -->
-
-                <section class="card">
-
-                    <h2>
-                        Customer Information
-                    </h2>
+                <h2>
+                    Customer Information
+                </h2>
 
 
-                    <div class="info-row">
+                <div class="info-row">
 
-                        <div class="info-label">
-                            Customer ID
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="customerId"
-                        >
-                            -
-                        </div>
-
+                    <div class="info-label">
+                        Customer ID
                     </div>
 
-
-                    <div class="info-row">
-
-                        <div class="info-label">
-                            Customer Name
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="customerName"
-                        >
-                            -
-                        </div>
-
+                    <div
+                        class="info-value"
+                        id="customerId"
+                    >
+                        -
                     </div>
 
+                </div>
 
-                    <div class="info-row">
 
-                        <div class="info-label">
-                            Email
-                        </div>
+                <div class="info-row">
 
-                        <div
-                            class="info-value"
-                            id="customerEmail"
-                        >
-                            -
-                        </div>
-
+                    <div class="info-label">
+                        Customer Name
                     </div>
 
-                </section>
-
-
-
-                <!-- ISSUE INFORMATION -->
-
-                <section class="card">
-
-                    <h2>
-                        Ticket Information
-                    </h2>
-
-
-                    <div class="info-row">
-
-                        <div class="info-label">
-                            Issue
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="issue"
-                        >
-                            -
-                        </div>
-
+                    <div
+                        class="info-value"
+                        id="customerName"
+                    >
+                        -
                     </div>
 
+                </div>
 
-                    <div class="info-row">
 
-                        <div class="info-label">
-                            Support Type
-                        </div>
+                <div class="info-row">
 
-                        <div
-                            class="info-value"
-                            id="supportType"
-                        >
-                            -
-                        </div>
-
+                    <div class="info-label">
+                        Email
                     </div>
 
-
-                    <div class="info-row">
-
-                        <div class="info-label">
-                            Appointment Date
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="appointmentDate"
-                        >
-                            -
-                        </div>
-
+                    <div
+                        class="info-value"
+                        id="customerEmail"
+                    >
+                        -
                     </div>
 
+                </div>
 
-                    <div class="info-row">
+            </section>
 
-                        <div class="info-label">
-                            Appointment Time
-                        </div>
 
-                        <div
-                            class="info-value"
-                            id="appointmentTime"
-                        >
-                            -
-                        </div>
 
+            <!-- ISSUE INFORMATION -->
+
+            <section class="card">
+
+                <h2>
+                    Ticket Information
+                </h2>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Issue
                     </div>
 
-
-                    <div class="info-row">
-
-                        <div class="info-label">
-                            Created Date
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="createdDate"
-                        >
-                            -
-                        </div>
-
+                    <div
+                        class="info-value"
+                        id="issue"
+                    >
+                        -
                     </div>
 
-                </section>
+                </div>
 
 
-            </div>
+                <div class="info-row">
 
-
-
-            <!-- =========================
-                 RIGHT SIDE
-            ========================= -->
-
-            <div>
-
-
-                <!-- UPDATE TICKET -->
-
-                <section class="card">
-
-                    <h2>
-                        Manage Ticket
-                    </h2>
-
-
-                    <div class="form-group">
-
-                        <label for="assignedEngineer">
-                            Assigned Engineer
-                        </label>
-
-                        <select id="assignedEngineer">
-                        <option value="">Unassigned</option>
-                        </select>
+                    <div class="info-label">
+                        Support Type
                     </div>
 
-
-                    <div class="form-group">
-
-                        <label for="status">
-                            Status
-                        </label>
-
-                        <select id="status">
-
-                            <option value="Open">
-                                Open
-                            </option>
-
-                            <option value="In Progress">
-                                In Progress
-                            </option>
-
-                            <option value="Pending">
-                                Pending
-                            </option>
-
-                            <option value="Closed">
-                                Closed
-                            </option>
-
-                        </select>
-
+                    <div
+                        class="info-value"
+                        id="supportType"
+                    >
+                        -
                     </div>
 
+                </div>
 
-                    <div class="form-group">
 
-                        <label for="appointmentStatus">
-                            Appointment Status
-                        </label>
+                <div class="info-row">
 
-                        <select id="appointmentStatus">
-
-                            <option value="Pending">
-                                Pending
-                            </option>
-
-                            <option value="Confirmed">
-                                Confirmed
-                            </option>
-
-                            <option value="Reschedule Required">
-                                Reschedule Required
-                            </option>
-
-                        </select>
-
+                    <div class="info-label">
+                        Appointment Date
                     </div>
 
-
-                    <div class="form-group">
-
-                        <label for="serviceResult">
-                            Service Result
-                        </label>
-
-                        <textarea
-                            id="serviceResult"
-                            placeholder="Enter the result of the service..."
-                        ></textarea>
-
+                    <div
+                        class="info-value"
+                        id="appointmentDate"
+                    >
+                        -
                     </div>
 
-
-                    <div class="button-group"> 
-
-    <button 
-        class="button save-button" 
-        type="button" 
-        onclick="saveChanges()" 
-    > 
-        Save Changes 
-    </button>
-
-    <button 
-        class="button delete-button" 
-        type="button" 
-        onclick="deleteTicket()" 
-    > 
-        Delete Ticket 
-    </button>
-
-</div>
-
-                </section>
+                </div>
 
 
-            </div>
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Appointment Time
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="appointmentTime"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Created Date
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="createdDate"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+            </section>
 
 
         </div>
 
 
-    </main>
 
-    <script>
-        async function loadStaff() {
+        <!-- =========================
+             RIGHT SIDE
+        ========================= -->
 
-    try {
+        <div>
 
-        const response = await fetch("/api/staff");
 
-        const staffList = await response.json();
+            <!-- UPDATE TICKET -->
 
-        const dropdown = document.getElementById("assignedEngineer");
+            <section class="card">
 
-        // Keep the Unassigned option
-        dropdown.innerHTML = '<option value="">Unassigned</option>';
+                <h2>
+                    Manage Ticket
+                </h2>
 
-        // Add each staff member from Excel
-        staffList.forEach(staff => {
 
-            const option = document.createElement("option");
+                <div class="form-group">
 
-            option.value = staff.name;
-            option.textContent = staff.name;
+                    <label for="assignedEngineer">
+                        Assigned Engineer
+                    </label>
 
-            dropdown.appendChild(option);
+                    <select id="assignedEngineer">
 
-        });
+                        <option value="">
+                            Unassigned
+                        </option>
 
-    } catch (error) {
+                    </select>
 
-        console.error("Unable to load staff:", error);
+                </div>
 
-    }
 
-}
-        async function loadTicket() {
+                <div class="form-group">
 
-            // Get Ticket ID from the URL
-            const params = new URLSearchParams(window.location.search);
-            const ticketId = params.get("ticketId");
+                    <label for="status">
+                        Status
+                    </label>
 
+                    <select id="status">
 
-            if (!ticketId) {
+                        <option value="Open">
+                            Open
+                        </option>
 
-                alert("Ticket ID not found.");
+                        <option value="In Progress">
+                            In Progress
+                        </option>
 
-                return;
+                        <option value="Pending">
+                            Pending
+                        </option>
 
-            }
+                        <option value="Closed">
+                            Closed
+                        </option>
 
+                    </select>
 
-            try {
+                </div>
 
-                // Get the ticket from the server
-                const response = await fetch(
-                    "/api/tickets/" + encodeURIComponent(ticketId)
-                );
 
-                const ticket = await response.json();
+                <div class="form-group">
 
+                    <label for="appointmentStatus">
+                        Appointment Status
+                    </label>
 
-                if (!response.ok) {
+                    <select id="appointmentStatus">
 
-                    alert(ticket.message);
+                        <option value="Pending">
+                            Pending
+                        </option>
 
-                    return;
+                        <option value="Confirmed">
+                            Confirmed
+                        </option>
 
-                }
+                        <option value="Reschedule Required">
+                            Reschedule Required
+                        </option>
 
+                    </select>
 
-                // =========================
-                // DISPLAY TICKET DETAILS
-                // =========================
+                </div>
 
-                document.getElementById("ticketId").textContent =
-                    ticket["Ticket ID"];
 
-                document.getElementById("ticketStatus").textContent =
-                    ticket["Status"];
+                <div class="form-group">
 
+                    <label for="serviceResult">
+                        Service Result
+                    </label>
 
-                // Customer Information
+                    <textarea
+                        id="serviceResult"
+                        placeholder="Enter the result of the service..."
+                    ></textarea>
 
-                document.getElementById("customerId").textContent =
-                    ticket["Customer ID"] || "-";
+                </div>
 
-                document.getElementById("customerName").textContent =
-                    ticket["Customer Name"] || "-";
 
-                document.getElementById("customerEmail").textContent =
-                    ticket["Email"] || "-";
+                <div class="button-group">
 
+                    <button
+                        class="button save-button"
+                        type="button"
+                        onclick="saveChanges()"
+                    >
+                        Save Changes
+                    </button>
 
-                // Ticket Information
 
-                document.getElementById("issue").textContent =
-                    ticket["Issue"] || "-";
+                    <button
+                        class="button delete-button"
+                        type="button"
+                        onclick="deleteTicket()"
+                    >
+                        Delete Ticket
+                    </button>
 
-                document.getElementById("supportType").textContent =
-                    ticket["Support Type"] || "-";
+                </div>
 
-                document.getElementById("appointmentDate").textContent =
-                    ticket["Appointment Date"] || "-";
 
-                document.getElementById("appointmentTime").textContent =
-                    ticket["Appointment Time"] || "-";
+            </section>
 
-                document.getElementById("createdDate").textContent =
-                    ticket["Created Date"] || "-";
 
+        </div>
 
-                // =========================
-                // MANAGE TICKET
-                // =========================
 
-                document.getElementById("assignedEngineer").value =
-                    ticket["Assigned Engineer"] || "";
+    </div>
 
-                document.getElementById("status").value =
-                    ticket["Status"] || "Open";
 
-                document.getElementById("appointmentStatus").value =
-                    ticket["Appointment Status"] || "Pending";
+</main>
 
-                document.getElementById("serviceResult").value =
-                    ticket["Service Result"] || "";
 
-
-                console.log("Ticket loaded:", ticket);
-
-
-            } catch (error) {
-
-                console.error("Unable to load ticket:", error);
-
-                alert("Unable to load ticket.");
-
-            }
-
-        }
-
-
-        // =========================
-        // SAVE CHANGES
-        // =========================
-
-        async function saveChanges() {
-
-            const params = new URLSearchParams(window.location.search);
-            const ticketId = params.get("ticketId");
-
-
-            if (!ticketId) {
-
-                alert("Ticket ID not found.");
-
-                return;
-
-            }
-
-
-            const assignedEngineer =
-                document.getElementById("assignedEngineer").value;
-
-            const status =
-                document.getElementById("status").value;
-
-            const appointmentStatus =
-                document.getElementById("appointmentStatus").value;
-
-            const serviceResult =
-                document.getElementById("serviceResult").value;
-
-
-            try {
-
-                const response = await fetch(
-                    "/api/tickets/" + encodeURIComponent(ticketId),
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-
-                            assignedEngineer:
-                                assignedEngineer,
-
-                            status:
-                                status,
-
-                            appointmentStatus:
-                                appointmentStatus,
-
-                            serviceResult:
-                                serviceResult
-
-                        })
-                    }
-                );
-
-
-                const data = await response.json();
-
-
-                if (response.ok) {
-
-                    alert("Ticket updated successfully!");
-
-                    // Update the status shown at the top
-                    document.getElementById("ticketStatus").textContent =
-                        status;
-
-                } else {
-
-                    alert(data.message);
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to save ticket:",
-                    error
-                );
-
-                alert("Unable to save ticket.");
-
-            }
-
-        }
-
-                // =========================
-        // DELETE TICKET
-        // =========================
-
-        async function deleteTicket() {
-
-            const params = new URLSearchParams(window.location.search);
-            const ticketId = params.get("ticketId");
-
-            if (!ticketId) {
-
-                alert("Ticket ID not found.");
-                return;
-
-            }
-
-            const confirmed = confirm(
-                "Are you sure you want to delete this ticket?"
-            );
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-            try {
-
-                const response = await fetch(
-                    "/api/tickets/" + encodeURIComponent(ticketId),
-                    {
-                        method: "DELETE"
-                    }
-                );
-
-                const data = await response.json();
-
-                if (response.ok) {
-
-                    alert("Ticket deleted successfully!");
-
-                    window.location.href = "/staff.html";
-
-                } else {
-
-                    alert(data.message);
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Unable to delete ticket:",
-                    error
-                );
-
-                alert("Unable to delete ticket.");
-
-            }
-
-        }
-        // Load the ticket when the page opens
-        loadTicket();
-        loadStaff();
-
-    </script>
-
-</body>
-</html>
-
-</body>
-</html>
+<script src="/script.js"></script>
 
 
 </body>

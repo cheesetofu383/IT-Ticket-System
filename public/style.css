@@ -310,3 +310,34 @@ a:hover {
         width: 100%;
     }
 }
+.create-ticket-btn {
+    background: #2563eb;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.create-ticket-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+.edit-ticket-btn {
+    display: inline-block;
+    padding: 7px 14px;
+    background: #2563eb;
+    color: white !important;
+    border-radius: 6px;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.edit-ticket-btn:hover {
+    background: #1d4ed8;
+}

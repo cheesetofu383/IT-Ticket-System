@@ -1,44 +1,1134 @@
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
 function loginAsCustomer() {
-    window.location.href = "/customer.html";
+    window.location.href = "/customer-login.html";
 }
 
 function loginAsStaff() {
-    window.location.href = "/staff.html";
+    window.location.href = "/staff-login.html";
 }
+
+
+/* =========================================================
+   STAFF LOGIN
+========================================================= */
+
+const staffLoginForm = document.getElementById("staffLoginForm");
+
+if (staffLoginForm) {
+
+    staffLoginForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const email =
+            document.getElementById("staffEmail").value.trim();
+
+        const password =
+            document.getElementById("staffPassword").value;
+
+        if (!email || !password) {
+            alert("Please enter your email and password.");
+            return;
+        }
+
+        try {
+
+            const response = await fetch("/api/staff/login", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                localStorage.setItem(
+                    "staff",
+                    JSON.stringify(data.staff)
+                );
+
+                alert("Login successful!");
+
+                window.location.href = "/staff.html";
+
+            } else {
+
+                alert(
+                    data.message ||
+                    "Invalid email or password."
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error("Staff login error:", error);
+
+            alert(
+                "Unable to connect to the server. Please make sure the server is running."
+            );
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   CUSTOMER TICKET FORM
+========================================================= */
 
 const ticketForm = document.getElementById("ticketForm");
 
+const supportTypeSelect =
+    document.getElementById("supportType");
+
+const appointmentSection =
+    document.getElementById("appointmentSection");
+
+
+/* =========================================================
+   SHOW / HIDE APPOINTMENT FIELDS
+========================================================= */
+
+if (supportTypeSelect && appointmentSection) {
+
+    function updateAppointmentFields() {
+
+        const supportType =
+            supportTypeSelect.value.trim().toLowerCase();
+
+
+        if (supportType === "on-site support") {
+
+            // Show appointment fields
+            appointmentSection.style.display = "block";
+
+        } else {
+
+            // Hide appointment fields
+            appointmentSection.style.display = "none";
+
+
+            // Clear the fields
+            const appointmentDate =
+                document.getElementById("appointmentDate");
+
+            const appointmentTime =
+                document.getElementById("appointmentTime");
+
+            const appointmentDuration =
+                document.getElementById("appointmentDuration");
+
+
+            if (appointmentDate) {
+                appointmentDate.value = "";
+            }
+
+            if (appointmentTime) {
+                appointmentTime.value = "";
+            }
+
+            if (appointmentDuration) {
+                appointmentDuration.value = "";
+            }
+
+        }
+
+    }
+
+
+    supportTypeSelect.addEventListener(
+        "change",
+        updateAppointmentFields
+    );
+
+
+    // Run when page first loads
+    updateAppointmentFields();
+
+}
+
+
+/* =========================================================
+   SUBMIT TICKET
+========================================================= */
+
 if (ticketForm) {
-    ticketForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
 
-        const ticket = {
-            customerName: document.getElementById("customerName").value,
-            email: document.getElementById("email").value,
-            issue: document.getElementById("issue").value,
-            priority: document.getElementById("priority").value,
-            appointmentDate: document.getElementById("appointmentDate").value,
-            appointmentTime: document.getElementById("appointmentTime").value
-        };
+    ticketForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        const response = await fetch("/api/tickets", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(ticket)
+            event.preventDefault();
+
+
+            const supportType =
+                document.getElementById("supportType")?.value || "";
+
+
+            const isOnSite =
+                supportType.trim().toLowerCase() ===
+                "on-site support";
+
+
+            /* -----------------------------------------
+               APPOINTMENT VALUES
+            ----------------------------------------- */
+
+            let appointmentDate = null;
+            let appointmentTime = null;
+            let appointmentDuration = null;
+
+
+            if (isOnSite) {
+
+                appointmentDate =
+                    document.getElementById(
+                        "appointmentDate"
+                    )?.value || null;
+
+
+                appointmentTime =
+                    document.getElementById(
+                        "appointmentTime"
+                    )?.value || null;
+
+
+                appointmentDuration =
+                    document.getElementById(
+                        "appointmentDuration"
+                    )?.value || null;
+
+            }
+
+
+            /* -----------------------------------------
+               TICKET DATA
+            ----------------------------------------- */
+
+            const ticket = {
+
+                customerName:
+                    document.getElementById(
+                        "customerName"
+                    )?.value || "",
+
+
+                email:
+                    document.getElementById(
+                        "email"
+                    )?.value || "",
+
+
+                issue:
+                    document.getElementById(
+                        "issue"
+                    )?.value || "",
+
+
+                priority:
+                    document.getElementById(
+                        "priority"
+                    )?.value || "",
+
+
+                supportType:
+                    supportType,
+
+
+                appointmentDate:
+                    appointmentDate,
+
+
+                appointmentTime:
+                    appointmentTime,
+
+
+                appointmentDuration:
+                    appointmentDuration
+
+            };
+
+
+            console.log(
+                "Submitting ticket:",
+                ticket
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/tickets",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(ticket)
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (response.ok) {
+
+                    const ticketMessage =
+                        document.getElementById(
+                            "ticketMessage"
+                        );
+
+
+                    if (ticketMessage) {
+
+                        ticketMessage.textContent =
+                            `Ticket created successfully! Ticket ID: ${result.ticketId}`;
+
+                    } else {
+
+                        alert(
+                            `Ticket created successfully!\nTicket ID: ${result.ticketId}`
+                        );
+
+                    }
+
+
+                    ticketForm.reset();
+
+
+                    // Hide appointment section again
+                    if (appointmentSection) {
+
+                        appointmentSection.style.display =
+                            "none";
+
+                    }
+
+
+                } else {
+
+                    alert(
+                        result.message ||
+                        "Failed to create ticket."
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Ticket creation error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to connect to the server."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   STAFF DASHBOARD
+========================================================= */
+
+const ticketTableBody =
+    document.getElementById("ticketTableBody");
+
+if (ticketTableBody) {
+
+    loadStaffDashboard();
+
+}
+
+
+async function loadStaffDashboard() {
+
+    try {
+
+        const response =
+            await fetch("/api/tickets");
+
+        const tickets =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load tickets."
+            );
+
+        }
+
+
+        const totalTickets =
+            document.getElementById("totalTickets");
+
+        const openTickets =
+            document.getElementById("openTickets");
+
+        const inProgressTickets =
+            document.getElementById("inProgressTickets");
+
+        const closedTickets =
+            document.getElementById("closedTickets");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+
+        if (totalTickets) {
+
+            totalTickets.textContent =
+                tickets.length;
+
+        }
+
+
+        if (openTickets) {
+
+            openTickets.textContent =
+                tickets.filter(
+                    ticket =>
+                        ticket.Status === "Open"
+                ).length;
+
+        }
+
+
+        if (inProgressTickets) {
+
+            inProgressTickets.textContent =
+                tickets.filter(
+                    ticket =>
+                        ticket.Status === "In Progress"
+                ).length;
+
+        }
+
+
+        if (closedTickets) {
+
+            closedTickets.textContent =
+                tickets.filter(
+                    ticket =>
+                        ticket.Status === "Closed"
+                ).length;
+
+        }
+
+
+        ticketTableBody.innerHTML = "";
+
+
+        if (tickets.length === 0) {
+
+            if (emptyState) {
+                emptyState.style.display = "block";
+            }
+
+            return;
+
+        }
+
+
+        if (emptyState) {
+            emptyState.style.display = "none";
+        }
+
+
+        tickets.forEach(ticket => {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    <a href="/ticket-details.html?ticketId=${encodeURIComponent(
+                        ticket["Ticket ID"] || ticket.ticketId
+                    )}">
+                        ${ticket["Ticket ID"] || ticket.ticketId || ""}
+                    </a>
+                </td>
+
+                <td>
+                    ${ticket["Customer Name"] || ticket.customerName || ""}
+                </td>
+
+                <td>
+                    ${ticket.Issue || ticket.issue || ""}
+                </td>
+
+                <td>
+                    ${ticket["Support Type"] || ticket.supportType || ""}
+                </td>
+
+                <td>
+                    ${ticket.Status || ticket.status || ""}
+                </td>
+
+                <td>
+                    <a
+                        href="/ticket-details.html?ticketId=${encodeURIComponent(
+                            ticket["Ticket ID"] || ticket.ticketId
+                        )}"
+                        class="edit-ticket-btn"
+                    >
+                        Edit
+                    </a>
+                </td>
+
+            `;
+
+            ticketTableBody.appendChild(row);
+
         });
 
-        const result = await response.json();
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   STAFF PROFILE
+========================================================= */
+
+const profileName =
+    document.getElementById("profileName");
+
+if (profileName) {
+
+    loadStaffProfile();
+
+}
+
+
+async function loadStaffProfile() {
+
+    const staffData =
+        localStorage.getItem("staff");
+
+
+    if (!staffData) {
+
+        alert("Please log in first.");
+
+        window.location.href =
+            "/staff-login.html";
+
+        return;
+
+    }
+
+
+    const staff =
+        JSON.parse(staffData);
+
+
+    const profileName =
+        document.getElementById("profileName");
+
+    const profileDepartment =
+        document.getElementById("profileDepartment");
+
+    const staffName =
+        document.getElementById("staffName");
+
+    const staffEmail =
+        document.getElementById("staffEmail");
+
+    const staffRole =
+        document.getElementById("staffRole");
+
+    const staffDepartment =
+        document.getElementById("staffDepartment");
+
+
+    if (profileName) {
+        profileName.textContent =
+            staff.name || "";
+    }
+
+    if (profileDepartment) {
+        profileDepartment.textContent =
+            staff.department || "";
+    }
+
+    if (staffName) {
+        staffName.textContent =
+            staff.name || "";
+    }
+
+    if (staffEmail) {
+        staffEmail.textContent =
+            staff.email || "";
+    }
+
+    if (staffRole) {
+        staffRole.textContent =
+            staff.role || "";
+    }
+
+    if (staffDepartment) {
+        staffDepartment.textContent =
+            staff.department || "";
+    }
+
+}
+
+
+/* =========================================================
+   TICKET DETAILS
+========================================================= */
+
+const ticketIdElement =
+    document.getElementById("ticketId");
+
+if (ticketIdElement) {
+
+    loadTicketDetails();
+
+}
+
+
+async function loadTicketDetails() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const ticketId =
+        params.get("ticketId");
+
+
+    if (!ticketId) {
+
+        alert("No ticket ID was provided.");
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/tickets/${encodeURIComponent(ticketId)}`
+            );
+
+
+        const ticket =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                ticket.message ||
+                "Failed to load ticket."
+            );
+
+        }
+
+
+        /* -----------------------------------------
+           LOAD NORMAL TICKET INFORMATION
+        ----------------------------------------- */
+
+        setField(
+            "ticketId",
+            ticket["Ticket ID"] || ticket.ticketId
+        );
+
+        setField(
+            "customerId",
+            ticket["Customer ID"] || ticket.customerId
+        );
+
+        setField(
+            "customerName",
+            ticket["Customer Name"] || ticket.customerName
+        );
+
+        setField(
+            "customerEmail",
+            ticket.Email || ticket.email
+        );
+
+        setField(
+            "issue",
+            ticket.Issue || ticket.issue
+        );
+
+        setField(
+            "supportType",
+            ticket["Support Type"] || ticket.supportType
+        );
+
+        setField(
+            "appointmentDate",
+            ticket["Appointment Date"] || ticket.appointmentDate
+        );
+
+        setField(
+            "appointmentTime",
+            ticket["Appointment Time"] || ticket.appointmentTime
+        );
+
+        setField(
+            "createdDate",
+            ticket["Created Date"] || ticket.createdDate
+        );
+
+
+        /* -----------------------------------------
+           LOAD ENGINEERS
+        ----------------------------------------- */
+
+        await loadEngineers(
+            ticket["Assigned Engineer"] ||
+            ticket.assignedEngineer ||
+            ""
+        );
+
+
+        /* -----------------------------------------
+           LOAD OTHER EDITABLE FIELDS
+        ----------------------------------------- */
+
+        setField(
+            "status",
+            ticket.Status || ticket.status
+        );
+
+        setField(
+            "appointmentStatus",
+            ticket["Appointment Status"] ||
+            ticket.appointmentStatus
+        );
+
+        setField(
+            "serviceResult",
+            ticket["Service Result"] ||
+            ticket.serviceResult
+        );
+
+
+        const ticketStatus =
+            document.getElementById("ticketStatus");
+
+        if (ticketStatus) {
+
+            ticketStatus.textContent =
+                ticket.Status ||
+                ticket.status ||
+                "";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Ticket details error:",
+            error
+        );
+
+        alert(
+            "Unable to load ticket details."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD ENGINEERS
+========================================================= */
+
+async function loadEngineers(currentEngineer = "") {
+
+    const engineerSelect =
+        document.getElementById("assignedEngineer");
+
+
+    if (!engineerSelect) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch("/api/staff");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load staff."
+            );
+
+        }
+
+
+        const staff =
+            await response.json();
+
+
+        /* Clear existing options */
+
+        engineerSelect.innerHTML = "";
+
+
+        /* Unassigned option */
+
+        const unassignedOption =
+            document.createElement("option");
+
+        unassignedOption.value = "";
+
+        unassignedOption.textContent =
+            "Unassigned";
+
+        engineerSelect.appendChild(
+            unassignedOption
+        );
+
+
+        /* Add staff members */
+
+        staff.forEach(person => {
+
+            const option =
+                document.createElement("option");
+
+
+            option.value =
+                person.name;
+
+            option.textContent =
+                person.name;
+
+
+            /* Keep currently assigned engineer selected */
+
+            if (
+                person.name === currentEngineer
+            ) {
+
+                option.selected = true;
+
+            }
+
+
+            engineerSelect.appendChild(
+                option
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading engineers:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SET FIELD
+========================================================= */
+
+function setField(id, value) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) {
+        return;
+    }
+
+
+    if (
+        element.tagName === "INPUT" ||
+        element.tagName === "TEXTAREA" ||
+        element.tagName === "SELECT"
+    ) {
+
+        element.value =
+            value ?? "";
+
+    } else {
+
+        element.textContent =
+            value ?? "";
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE TICKET CHANGES
+========================================================= */
+
+async function saveChanges() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const ticketId =
+        params.get("ticketId");
+
+
+    if (!ticketId) {
+
+        alert("Ticket ID not found.");
+
+        return;
+
+    }
+
+
+    const updatedTicket = {
+
+        status:
+            document.getElementById("status")?.value || "",
+
+        assignedEngineer:
+            document.getElementById("assignedEngineer")?.value || "",
+
+        appointmentStatus:
+            document.getElementById("appointmentStatus")?.value || "",
+
+        serviceResult:
+            document.getElementById("serviceResult")?.value || ""
+
+    };
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/tickets/${encodeURIComponent(ticketId)}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(updatedTicket)
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
 
         if (response.ok) {
-            document.getElementById("ticketMessage").textContent =
-                `Ticket created successfully! Ticket ID: ${result.ticketId}`;
 
-            ticketForm.reset();
+            alert(
+                result.message ||
+                "Ticket updated successfully."
+            );
+
+            location.reload();
+
         } else {
-            document.getElementById("ticketMessage").textContent =
-                "Failed to create ticket.";
+
+            alert(
+                result.message ||
+                "Failed to update ticket."
+            );
+
         }
-    });
+
+
+    } catch (error) {
+
+        console.error(
+            "Save changes error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the server."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE TICKET
+========================================================= */
+
+async function deleteTicket() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const ticketId =
+        params.get("ticketId");
+
+
+    if (!ticketId) {
+
+        alert("Ticket ID not found.");
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete this ticket?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/tickets/${encodeURIComponent(ticketId)}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (response.ok) {
+
+            alert(
+                result.message ||
+                "Ticket deleted successfully."
+            );
+
+            window.location.href =
+                "/staff.html";
+
+        } else {
+
+            alert(
+                result.message ||
+                "Failed to delete ticket."
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Delete ticket error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the server."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logoutStaff() {
+
+    localStorage.removeItem("staff");
+
+    window.location.href =
+        "/staff-login.html";
+
+}
+
+
+function logoutCustomer() {
+
+    localStorage.removeItem("customer");
+
+    window.location.href =
+        "/customer-login.html";
+
 }

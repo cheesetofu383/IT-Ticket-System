@@ -1,705 +1,572 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Staff Dashboard - IT Support</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
+<title>Staff Dashboard - IT Support</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
-            min-height: 100vh;
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+        min-height: 100vh;
+    }
 
-        /* =========================
-           NAVBAR
-        ========================= */
+    /* =========================
+       NAVBAR
+    ========================= */
 
-        .navbar {
-            height: 70px;
+    .navbar {
+        height: 70px;
 
-            background: white;
+        background: white;
 
-            border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-            padding: 0 50px;
-        }
+        padding: 0 50px;
+    }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1769aa;
-        }
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1769aa;
+    }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
 
-        .nav-link {
-            text-decoration: none;
-            color: #4b5563;
-            font-size: 14px;
-        }
+    .nav-link {
+        text-decoration: none;
+        color: #4b5563;
+        font-size: 14px;
+    }
 
-        .nav-link:hover {
-            color: #1769aa;
-        }
+    .nav-link:hover {
+        color: #1769aa;
+    }
 
+    /* =========================
+       MAIN
+    ========================= */
 
-        /* =========================
-           MAIN
-        ========================= */
+    .container {
+        max-width: 1200px;
 
-        .container {
-            max-width: 1200px;
+        margin: 45px auto;
 
-            margin: 45px auto;
+        padding: 0 25px;
+    }
 
-            padding: 0 25px;
-        }
+    /* =========================
+       HEADER
+    ========================= */
 
+    .page-header {
+        display: flex;
 
-        /* =========================
-           HEADER
-        ========================= */
+        align-items: center;
 
-        .page-header {
-            display: flex;
+        justify-content: space-between;
 
-            align-items: center;
+        margin-bottom: 30px;
+    }
 
-            justify-content: space-between;
+    .page-header h1 {
+        font-size: 32px;
 
-            margin-bottom: 30px;
-        }
+        margin-bottom: 8px;
+    }
 
-        .page-header h1 {
-            font-size: 32px;
+    .page-header p {
+        color: #6b7280;
 
-            margin-bottom: 8px;
-        }
+        font-size: 15px;
+    }
 
-        .page-header p {
-            color: #6b7280;
+    /* =========================
+       SUMMARY
+    ========================= */
 
-            font-size: 15px;
-        }
+    .summary-grid {
+        display: grid;
 
+        grid-template-columns:
+            repeat(4, 1fr);
 
-        /* =========================
-           SUMMARY
-        ========================= */
+        gap: 20px;
+
+        margin-bottom: 30px;
+    }
+
+    .summary-card {
+        background: white;
+
+        padding: 25px;
+
+        border-radius: 14px;
+
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-label {
+        color: #6b7280;
+
+        font-size: 14px;
+
+        margin-bottom: 10px;
+    }
+
+    .summary-number {
+        font-size: 30px;
+
+        font-weight: bold;
+    }
+
+    /* =========================
+       TICKETS
+    ========================= */
+
+    .tickets-card {
+        background: white;
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.06);
+
+        overflow: hidden;
+    }
+
+    .tickets-header {
+        padding: 25px 30px;
+
+        border-bottom: 1px solid #e5e7eb;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+    }
+
+    .tickets-header h2 {
+        font-size: 21px;
+    }
+
+    .tickets-header span {
+        color: #6b7280;
+
+        font-size: 13px;
+    }
+
+    /* =========================
+       TABLE
+    ========================= */
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+
+        padding: 16px 20px;
+
+        background: #f9fafb;
+
+        color: #6b7280;
+
+        font-size: 13px;
+
+        font-weight: bold;
+
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+        padding: 18px 20px;
+
+        border-bottom: 1px solid #f0f0f0;
+
+        font-size: 14px;
+    }
+
+    tr:hover {
+        background: #fafcff;
+    }
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status {
+        display: inline-block;
+
+        padding: 6px 11px;
+
+        border-radius: 20px;
+
+        background: #eef6fc;
+
+        color: #1769aa;
+
+        font-size: 12px;
+
+        font-weight: bold;
+    }
+
+    /* =========================
+       VIEW BUTTON
+    ========================= */
+
+    .view-button {
+        display: inline-block;
+
+        padding: 8px 14px;
+
+        border-radius: 7px;
+
+        background: #1769aa;
+
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 12px;
+
+        font-weight: bold;
+    }
+
+    .view-button:hover {
+        background: #12578c;
+    }
+
+    /* =========================
+       EMPTY STATE
+    ========================= */
+
+    .empty-state {
+        text-align: center;
+
+        padding: 65px 25px;
+    }
+
+    .empty-state h3 {
+        font-size: 19px;
+
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        color: #6b7280;
+
+        font-size: 14px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 900px) {
 
         .summary-grid {
-            display: grid;
-
             grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 20px;
-
-            margin-bottom: 30px;
+                repeat(2, 1fr);
         }
 
-        .summary-card {
-            background: white;
+    }
 
-            padding: 25px;
+    @media (max-width: 650px) {
 
-            border-radius: 14px;
-
-            box-shadow:
-                0 8px 25px rgba(0, 0, 0, 0.05);
+        .navbar {
+            padding: 0 20px;
         }
 
-        .summary-label {
-            color: #6b7280;
-
-            font-size: 14px;
-
-            margin-bottom: 10px;
+        .container {
+            margin: 30px auto;
         }
 
-        .summary-number {
-            font-size: 30px;
+        .page-header {
+            flex-direction: column;
 
-            font-weight: bold;
+            align-items: flex-start;
+
+            gap: 10px;
         }
 
-
-        /* =========================
-           TICKETS
-        ========================= */
-
-        .tickets-card {
-            background: white;
-
-            border-radius: 16px;
-
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.06);
-
-            overflow: hidden;
+        .summary-grid {
+            grid-template-columns: 1fr;
         }
 
-        .tickets-header {
-            padding: 25px 30px;
+    }
 
-            border-bottom: 1px solid #e5e7eb;
+</style>
 
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-        }
-
-        .tickets-header h2 {
-            font-size: 21px;
-        }
-
-        .tickets-header span {
-            color: #6b7280;
-
-            font-size: 13px;
-        }
-
-
-        /* =========================
-           TABLE
-        ========================= */
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-
-            padding: 16px 20px;
-
-            background: #f9fafb;
-
-            color: #6b7280;
-
-            font-size: 13px;
-
-            font-weight: bold;
-
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        td {
-            padding: 18px 20px;
-
-            border-bottom: 1px solid #f0f0f0;
-
-            font-size: 14px;
-        }
-
-        tr:hover {
-            background: #fafcff;
-        }
-
-
-        /* =========================
-           STATUS
-        ========================= */
-
-        .status {
-            display: inline-block;
-
-            padding: 6px 11px;
-
-            border-radius: 20px;
-
-            background: #eef6fc;
-
-            color: #1769aa;
-
-            font-size: 12px;
-
-            font-weight: bold;
-        }
-
-
-        /* =========================
-           VIEW BUTTON
-        ========================= */
-
-        .view-button {
-            display: inline-block;
-
-            padding: 8px 14px;
-
-            border-radius: 7px;
-
-            background: #1769aa;
-
-            color: white;
-
-            text-decoration: none;
-
-            font-size: 12px;
-
-            font-weight: bold;
-        }
-
-        .view-button:hover {
-            background: #12578c;
-        }
-
-
-        /* =========================
-           EMPTY STATE
-        ========================= */
-
-        .empty-state {
-            text-align: center;
-
-            padding: 65px 25px;
-        }
-
-        .empty-state h3 {
-            font-size: 19px;
-
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            color: #6b7280;
-
-            font-size: 14px;
-        }
-
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 900px) {
-
-            .summary-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-        }
-
-
-        @media (max-width: 650px) {
-
-            .navbar {
-                padding: 0 20px;
-            }
-
-            .container {
-                margin: 30px auto;
-            }
-
-            .page-header {
-                flex-direction: column;
-
-                align-items: flex-start;
-
-                gap: 10px;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
 
 </head>
-
 
 <body>
 
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
+<!-- =========================
+     NAVBAR
+========================= -->
 
-    <nav class="navbar">
+<nav class="navbar">
 
-        <div class="logo">
-            IT Support
+    <div class="logo">
+        IT Support
+    </div>
+
+
+    <div class="nav-right">
+
+        <a
+            href="/staff-profile.html"
+            class="nav-link"
+        >
+            Staff Profile
+        </a>
+
+        <a
+            href="/"
+            class="nav-link"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+
+    <!-- HEADER -->
+
+    <section class="page-header">
+
+        <div>
+
+            <h1>
+                IT Dashboard
+            </h1>
+            <button 
+    type="button" 
+    class="create-ticket-btn"
+    onclick="window.location.href='/ticket-form.html'">
+    + Create Ticket
+</button>
+            <p>
+                Manage and monitor customer support tickets.
+            </p>
+
         </div>
 
-
-        <div class="nav-right">
-
-            <a
-                href="/staff-profile.html"
-                class="nav-link"
-            >
-                Staff Profile
-            </a>
-
-            <a
-                href="/"
-                class="nav-link"
-            >
-                Logout
-            </a>
-
-        </div>
-
-    </nav>
+    </section>
 
 
 
     <!-- =========================
-         MAIN
+         SUMMARY CARDS
     ========================= -->
 
-    <main class="container">
+    <section class="summary-grid">
 
 
-        <!-- HEADER -->
+        <div class="summary-card">
 
-        <section class="page-header">
-
-            <div>
-
-                <h1>
-                    IT Dashboard
-                </h1>
-
-                <p>
-                    Manage and monitor customer support tickets.
-                </p>
-
+            <div class="summary-label">
+                Total Tickets
             </div>
-
-        </section>
-
-
-
-        <!-- =========================
-             SUMMARY CARDS
-        ========================= -->
-
-        <section class="summary-grid">
-
-
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    Total Tickets
-                </div>
-
-                <div
-                    class="summary-number"
-                    id="totalTickets"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    Open
-                </div>
-
-                <div
-                    class="summary-number"
-                    id="openTickets"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    In Progress
-                </div>
-
-                <div
-                    class="summary-number"
-                    id="inProgressTickets"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <div class="summary-label">
-                    Closed
-                </div>
-
-                <div
-                    class="summary-number"
-                    id="closedTickets"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =========================
-             ALL TICKETS
-        ========================= -->
-
-        <section class="tickets-card">
-
-
-            <div class="tickets-header">
-
-                <h2>
-                    All Tickets
-                </h2>
-
-                <span>
-                    Customer support requests
-                </span>
-
-            </div>
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Ticket ID
-                            </th>
-
-                            <th>
-                                Customer
-                            </th>
-
-                            <th>
-                                Issue
-                            </th>
-
-                            <th>
-                                Support Type
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="ticketTableBody">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
 
             <div
-                class="empty-state"
-                id="emptyState"
-                style="display:none;"
+                class="summary-number"
+                id="totalTickets"
             >
-
-                <h3>
-                    No tickets found
-                </h3>
-
-                <p>
-                    Customer tickets will appear here when they are submitted.
-                </p>
-
+                0
             </div>
 
+        </div>
 
-        </section>
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Open
+            </div>
+
+            <div
+                class="summary-number"
+                id="openTickets"
+            >
+                0
+            </div>
+
+        </div>
 
 
-    </main>
+        <div class="summary-card">
+
+            <div class="summary-label">
+                In Progress
+            </div>
+
+            <div
+                class="summary-number"
+                id="inProgressTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Closed
+            </div>
+
+            <div
+                class="summary-number"
+                id="closedTickets"
+            >
+                0
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =========================
+         ALL TICKETS
+    ========================= -->
+
+    <section class="tickets-card">
+
+
+        <div class="tickets-header">
+
+            <h2>
+                All Tickets
+            </h2>
+
+            <span>
+                Customer support requests
+            </span>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Ticket ID
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Issue
+                        </th>
+
+                        <th>
+                            Support Type
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="ticketTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            class="empty-state"
+            id="emptyState"
+            style="display:none;"
+        >
+
+            <h3>
+                No tickets found
+            </h3>
+
+            <p>
+                Customer tickets will appear here when they are submitted.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+<script src="/script.js"></script>
 
 
 </body>
-<script>
-const staff = localStorage.getItem("staff");
 
-if (!staff) {
-    window.location.href = "/staff-login.html";
-}
-async function loadTickets() {
-
-    try {
-
-        const response = await fetch("/api/tickets");
-
-        const tickets = await response.json();
-
-        console.log("Tickets loaded:", tickets);
-
-
-        // Update summary numbers
-
-        document.getElementById("totalTickets").textContent =
-            tickets.length;
-
-        document.getElementById("openTickets").textContent =
-            tickets.filter(
-                ticket => ticket["Status"] === "Open"
-            ).length;
-
-        document.getElementById("inProgressTickets").textContent =
-            tickets.filter(
-                ticket => ticket["Status"] === "In Progress"
-            ).length;
-
-        document.getElementById("closedTickets").textContent =
-            tickets.filter(
-                ticket => ticket["Status"] === "Closed"
-            ).length;
-
-
-        // Get table
-
-        const tableBody =
-            document.getElementById("ticketTableBody");
-
-        const emptyState =
-            document.getElementById("emptyState");
-
-
-        // Clear existing rows
-
-        tableBody.innerHTML = "";
-
-
-        // No tickets
-
-        if (tickets.length === 0) {
-
-            emptyState.style.display = "block";
-
-            return;
-
-        }
-
-
-        // Tickets exist
-
-        emptyState.style.display = "none";
-
-
-        // Add each ticket to table
-
-        tickets.forEach(ticket => {
-
-            const row =
-                document.createElement("tr");
-
-            row.innerHTML = `
-
-                <td>
-                    <strong>
-                        ${ticket["Ticket ID"]}
-                    </strong>
-                </td>
-
-                <td>
-                    ${ticket["Customer Name"]}
-                </td>
-
-                <td>
-                    ${ticket["Issue"]}
-                </td>
-
-                <td>
-                    ${ticket["Support Type"] || "Support"}
-                </td>
-
-                <td>
-                    <span class="status">
-                        ${ticket["Status"]}
-                    </span>
-                </td>
-
-                <td>
-
-                    <a
-                        href="/ticket-details.html?ticketId=${encodeURIComponent(ticket["Ticket ID"])}"
-                        class="view-button"
-                    >
-                        View
-                    </a>
-
-                </td>
-
-            `;
-
-            tableBody.appendChild(row);
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Unable to load tickets:",
-            error
-        );
-
-    }
-
-}
-
-
-loadTickets();
-
-</script>
 </html>
