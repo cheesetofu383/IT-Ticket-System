@@ -846,9 +846,17 @@ async function loadTicketDetails() {
             ticket.Issue || ticket.issue
         );
 
+        const supportTypeValue =
+            ticket["Support Type"] || ticket.supportType || "";
+
         setField(
             "supportType",
-            ticket["Support Type"] || ticket.supportType
+            supportTypeValue
+        );
+
+        toggleOnSiteTicketFields(
+            String(supportTypeValue).trim().toLowerCase() ===
+            "on-site support"
         );
 
         setField(
@@ -1231,6 +1239,35 @@ function setField(id, value) {
 }
 
 
+function toggleOnSiteTicketFields(isOnSiteTicket) {
+
+    const onSiteRows = [
+        document.getElementById("appointmentDateRow"),
+        document.getElementById("appointmentTimeRow")
+    ];
+
+    const onSiteControls = [
+        document.getElementById("appointmentStatusGroup")
+    ];
+
+
+    onSiteRows.forEach(element => {
+        if (element) {
+            element.style.display =
+                isOnSiteTicket ? "grid" : "none";
+        }
+    });
+
+    onSiteControls.forEach(element => {
+        if (element) {
+            element.style.display =
+                isOnSiteTicket ? "block" : "none";
+        }
+    });
+
+}
+
+
 /* =========================================================
    SAVE TICKET CHANGES
 ========================================================= */
@@ -1256,6 +1293,13 @@ async function saveChanges() {
     }
 
 
+    const supportTypeValue =
+        document.getElementById("supportType")?.textContent || "";
+
+    const isOnSiteTicket =
+        String(supportTypeValue).trim().toLowerCase() ===
+        "on-site support";
+
     const updatedTicket = {
 
         status:
@@ -1265,7 +1309,9 @@ async function saveChanges() {
             document.getElementById("assignedEngineer")?.value || "",
 
         appointmentStatus:
-            document.getElementById("appointmentStatus")?.value || "",
+            isOnSiteTicket
+                ? document.getElementById("appointmentStatus")?.value || ""
+                : "",
 
         serviceResult:
             document.getElementById("serviceResult")?.value || ""
