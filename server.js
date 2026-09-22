@@ -149,10 +149,10 @@ function validateAppointmentDateTime(appointmentDate, appointmentTime, now = new
     const sameDay = selectedDate.getTime() === currentDate.getTime();
 
     if (sameDay) {
-        const minimumAllowedStart = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+        const minimumAllowedStart = new Date(now.getTime() + (1 * 60 * 60 * 1000));
 
         if (selectedDateTime < minimumAllowedStart) {
-            return "Appointment must be at least 2 hours after the current time for same-day bookings.";
+            return "Appointment must be at least 1 hour after the current time for same-day bookings.";
         }
     }
 
@@ -1498,9 +1498,10 @@ app.put(
                 );
 
             let resolvedCustomer = null;
+            let customerResolution = null;
 
             if (customerRecordToUse || customerEmailToUse) {
-                const customerResolution =
+                customerResolution =
                     resolveCustomerForTicket(
                         customersData,
                         customerRecordToUse,
@@ -1556,7 +1557,7 @@ app.put(
                 req.body.serviceResult || "";
 
 
-            if (customerResolution.created) {
+            if (customerResolution && customerResolution.created) {
                 workbook.Sheets["Customer"] =
                     XLSX.utils.json_to_sheet(customersData);
             }
@@ -2053,18 +2054,118 @@ app.get("/api/staff", (req, res) => {
    SUBMIT SERVICE REPORT
 ========================================================= */
 
+function calculateServiceReportHours(signInTime, signOutTime) {
+    if (!signInTime || !signOutTime) {
+        return 0;
+    }
+
+    const start = new Date(`1970-01-01T${signInTime}:00`);
+    const end = new Date(`1970-01-01T${signOutTime}:00`);
+    const diffMs = end - start;
+
+    if (diffMs <= 0) {
+        return 0;
+    }
+
+    return +(diffMs / (1000 * 60 * 60)).toFixed(2);
+}
+
+function normalizeServiceMode(mode, legacyOnsite) {
+    const rawValue = String(mode || legacyOnsite || "").trim();
+    const lowerValue = rawValue.toLowerCase();
+
+    if (["on-site", "onsite", "on site", "yes", "visit", "on-site visit"].includes(lowerValue)) {
+        return "On-site";
+    }
+
+    if (["remote", "remote support", "off-site", "offsite", "no"].includes(lowerValue)) {
+        return "Remote";
+    }
+
+    if (["hybrid", "hybrid support"].includes(lowerValue)) {
+        return "Hybrid";
+    }
+
+    return legacyOnsite === true ? "On-site" : "Remote";
+}
+
+function buildServiceReportFromTicket(ticket, overrides = {}) {
+    const {
+        onsite,
+        serviceMode,
+        engineer,
+        date,
+        signInTime,
+        signOutTime,
+        tasksDone,
+        resolution
+    } = overrides;
+
+    const hoursSpent = calculateServiceReportHours(signInTime, signOutTime);
+    const resolvedServiceMode = normalizeServiceMode(serviceMode, onsite);
+    const onsiteIndicator = ["On-site", "Hybrid"].includes(resolvedServiceMode) ? "Yes" : "No";
+
+    return {
+        "Report ID": "SR-" + Date.now(),
+        "Ticket ID": ticket["Ticket ID"],
+        "Customer ID": ticket["Customer ID"] || "",
+        "Customer Name": ticket["Customer Name"] || "",
+        "Engineer": engineer || ticket["Assigned Engineer"] || "",
+        "ServiceMode": resolvedServiceMode,
+        "Onsite": onsiteIndicator,
+        "Date": date || new Date().toISOString().split("T")[0],
+        "SignInTime": signInTime || "",
+        "SignOutTime": signOutTime || "",
+        "HoursSpent": hoursSpent,
+        "TasksDone": tasksDone || "",
+        "Resolution": resolution || "",
+        "Created At": new Date().toISOString()
+    };
+}
+
+app.get(
+    "/api/tickets/:ticketId/service-report",
+    (req, res) => {
+        try {
+            const ticketId = req.params.ticketId;
+            const workbook = XLSX.readFile(excelFile);
+
+            if (!workbook.Sheets["ServiceReport"]) {
+                return res.status(404).json({
+                    message: "No service report found for this ticket."
+                });
+            }
+
+            const reportsData = XLSX.utils.sheet_to_json(workbook.Sheets["ServiceReport"]);
+            const ticketReports = reportsData.filter(report => String(report["Ticket ID"] || "").trim() === String(ticketId).trim());
+
+            if (ticketReports.length === 0) {
+                return res.status(404).json({
+                    message: "No service report found for this ticket."
+                });
+            }
+
+            res.json(ticketReports[ticketReports.length - 1]);
+
+        } catch (error) {
+            console.error("Get service report error:", error);
+            res.status(500).json({
+                message: "Unable to load service report."
+            });
+        }
+    }
+);
+
 app.post(
     "/api/tickets/:ticketId/service-report",
     (req, res) => {
 
         try {
 
-            const ticketId =
-                req.params.ticketId;
-
-
+            const ticketId = req.params.ticketId;
             const {
                 onsite,
+                serviceMode,
                 engineer,
                 date,
                 signInTime,
@@ -2073,269 +2174,194 @@ app.post(
                 resolution
             } = req.body;
 
-
-            const workbook =
-                XLSX.readFile(
-                    excelFile
-                );
-
-
-            /* =========================
-               GET SERVICE REPORT DATA
-            ========================= */
+            const workbook = XLSX.readFile(excelFile);
 
             let reportsData = [];
 
-
-            if (
-                workbook.Sheets["ServiceReport"]
-            ) {
-
-                reportsData =
-                    XLSX.utils.sheet_to_json(
-                        workbook.Sheets[
-                            "ServiceReport"
-                        ]
-                    );
-
+            if (workbook.Sheets["ServiceReport"]) {
+                reportsData = XLSX.utils.sheet_to_json(workbook.Sheets["ServiceReport"]);
             }
 
-
-            /* =========================
-               GET TICKET DATA
-            ========================= */
-
-            const ticketSheet =
-                workbook.Sheets["Ticket"];
-
+            const ticketSheet = workbook.Sheets["Ticket"];
 
             if (!ticketSheet) {
-
                 return res.status(404).json({
-
-                    message:
-                        "Ticket sheet not found."
-
+                    message: "Ticket sheet not found."
                 });
-
             }
 
-
-            const ticketsData =
-                XLSX.utils.sheet_to_json(
-                    ticketSheet
-                );
-
-
-            /* =========================
-               FIND TICKET
-            ========================= */
-
-            const ticketIndex =
-                ticketsData.findIndex(
-                    ticket =>
-                        ticket["Ticket ID"] ===
-                        ticketId
-                );
-
+            const ticketsData = XLSX.utils.sheet_to_json(ticketSheet);
+            const ticketIndex = ticketsData.findIndex(ticket => ticket["Ticket ID"] === ticketId);
 
             if (ticketIndex === -1) {
-
                 return res.status(404).json({
-
-                    message:
-                        "Ticket not found."
-
+                    message: "Ticket not found."
                 });
-
             }
 
+            const ticket = ticketsData[ticketIndex];
+            const newReport = buildServiceReportFromTicket(ticket, {
+                onsite,
+                serviceMode,
+                engineer,
+                date,
+                signInTime,
+                signOutTime,
+                tasksDone,
+                resolution
+            });
 
-            const ticket =
-                ticketsData[ticketIndex];
+            reportsData.push(newReport);
 
-
-            /* =========================
-               CALCULATE HOURS
-            ========================= */
-
-            let hoursSpent = 0;
-
-
-            if (
-                signInTime &&
-                signOutTime
-            ) {
-
-                const start =
-                    new Date(
-                        `1970-01-01T${signInTime}:00`
-                    );
-
-
-                const end =
-                    new Date(
-                        `1970-01-01T${signOutTime}:00`
-                    );
-
-
-                const diffMs =
-                    end - start;
-
-
-                if (diffMs > 0) {
-
-                    hoursSpent =
-                        +(
-                            diffMs /
-                            (1000 * 60 * 60)
-                        ).toFixed(2);
-
-                }
-
-            }
-
-
-            /* =========================
-               CREATE SERVICE REPORT
-            ========================= */
-
-            const newReport = {
-
-                "Report ID":
-                    "SR-" + Date.now(),
-
-                "Ticket ID":
-                    ticket["Ticket ID"],
-
-                "Customer ID":
-                    ticket["Customer ID"] || "",
-
-                "Customer Name":
-                    ticket["Customer Name"] || "",
-
-                "Engineer":
-                    engineer ||
-                    ticket["Assigned Engineer"] ||
-                    "",
-
-                "Onsite":
-                    onsite
-                        ? "Yes"
-                        : "No",
-
-                "Date":
-                    date ||
-                    new Date()
-                        .toISOString()
-                        .split("T")[0],
-
-                "SignInTime":
-                    signInTime || "",
-
-                "SignOutTime":
-                    signOutTime || "",
-
-                "HoursSpent":
-                    hoursSpent,
-
-                "TasksDone":
-                    tasksDone || "",
-
-                "Resolution":
-                    resolution || "",
-
-                "Created At":
-                    new Date().toISOString()
-
-            };
-
-
-            reportsData.push(
-                newReport
-            );
-
-
-            /* =========================
-               CLOSE TICKET
-            ========================= */
-
-            ticketsData[ticketIndex][
-                "Status"
-            ] =
-                "Closed";
-
-
-            ticketsData[ticketIndex][
-                "Service Result"
-            ] =
-                resolution || "";
-
+            ticketsData[ticketIndex]["Status"] = "Closed";
+            ticketsData[ticketIndex]["Service Result"] = resolution || "";
 
             if (engineer) {
-
-                ticketsData[ticketIndex][
-                    "Assigned Engineer"
-                ] =
-                    engineer;
-
+                ticketsData[ticketIndex]["Assigned Engineer"] = engineer;
             }
 
-
-            /* =========================
-               SAVE BOTH SHEETS
-            ========================= */
-
-            workbook.Sheets[
-                "ServiceReport"
-            ] =
-                XLSX.utils.json_to_sheet(
-                    reportsData
-                );
-
-
-            workbook.Sheets[
-                "Ticket"
-            ] =
-                XLSX.utils.json_to_sheet(
-                    ticketsData
-                );
-
+            workbook.Sheets["ServiceReport"] = XLSX.utils.json_to_sheet(reportsData);
+            workbook.Sheets["Ticket"] = XLSX.utils.json_to_sheet(ticketsData);
 
             writeWorkbook(workbook);
 
-            console.log(
-                "Service report created:",
-                newReport
-            );
-
+            console.log("Service report created:", newReport);
 
             res.status(201).json({
-
-                message:
-                    "Service report generated and saved successfully.",
-
-                report:
-                    newReport
-
+                message: "Service report generated and saved successfully.",
+                report: newReport
             });
 
         } catch (error) {
+            console.error("Service report error:", error);
+            res.status(500).json({
+                message: "Unable to create service report."
+            });
+        }
+    }
+);
 
-            console.error(
-                "Service report error:",
-                error
+app.put(
+    "/api/tickets/:ticketId/service-report",
+    (req, res) => {
+        try {
+            const ticketId = req.params.ticketId;
+            const {
+                onsite,
+                serviceMode,
+                engineer,
+                date,
+                signInTime,
+                signOutTime,
+                tasksDone,
+                resolution
+            } = req.body;
+
+            const workbook = XLSX.readFile(excelFile);
+
+            if (!workbook.Sheets["ServiceReport"]) {
+                return res.status(404).json({
+                    message: "No service report found for this ticket."
+                });
+            }
+
+            const reportsData = XLSX.utils.sheet_to_json(workbook.Sheets["ServiceReport"]);
+            const reportIndex = reportsData.findLastIndex(
+                report => String(report["Ticket ID"] || "").trim() === String(ticketId).trim()
             );
 
-            res.status(500).json({
+            if (reportIndex === -1) {
+                return res.status(404).json({
+                    message: "No service report found for this ticket."
+                });
+            }
 
-                message:
-                    "Unable to create service report."
+            const existingReport = reportsData[reportIndex];
+            const resolvedServiceMode = normalizeServiceMode(serviceMode, onsite ?? (existingReport.Onsite === "Yes"));
+            const updatedReport = {
+                ...existingReport,
+                "Engineer": engineer || existingReport.Engineer || "",
+                "ServiceMode": resolvedServiceMode,
+                "Onsite": ["On-site", "Hybrid"].includes(resolvedServiceMode) ? "Yes" : "No",
+                "Date": date || existingReport.Date || new Date().toISOString().split("T")[0],
+                "SignInTime": signInTime || existingReport.SignInTime || "",
+                "SignOutTime": signOutTime || existingReport.SignOutTime || "",
+                "TasksDone": tasksDone || existingReport.TasksDone || "",
+                "Resolution": resolution || existingReport.Resolution || "",
+                "HoursSpent": calculateServiceReportHours(signInTime || existingReport.SignInTime || "", signOutTime || existingReport.SignOutTime || "")
+            };
 
+            reportsData[reportIndex] = updatedReport;
+
+            const ticketSheet = workbook.Sheets["Ticket"];
+            if (ticketSheet) {
+                const ticketsData = XLSX.utils.sheet_to_json(ticketSheet);
+                const ticketIndex = ticketsData.findIndex(ticket => ticket["Ticket ID"] === ticketId);
+
+                if (ticketIndex !== -1) {
+                    ticketsData[ticketIndex]["Service Result"] = updatedReport.Resolution || "";
+                    if (engineer) {
+                        ticketsData[ticketIndex]["Assigned Engineer"] = engineer;
+                    }
+                    workbook.Sheets["Ticket"] = XLSX.utils.json_to_sheet(ticketsData);
+                }
+            }
+
+            workbook.Sheets["ServiceReport"] = XLSX.utils.json_to_sheet(reportsData);
+            writeWorkbook(workbook);
+
+            res.json({
+                message: "Service report updated successfully.",
+                report: updatedReport
             });
 
+        } catch (error) {
+            console.error("Update service report error:", error);
+            res.status(500).json({
+                message: "Unable to update service report."
+            });
         }
+    }
+);
 
+app.delete(
+    "/api/tickets/:ticketId/service-report",
+    (req, res) => {
+        try {
+            const ticketId = req.params.ticketId;
+            const workbook = XLSX.readFile(excelFile);
+
+            if (!workbook.Sheets["ServiceReport"]) {
+                return res.status(404).json({
+                    message: "No service report found for this ticket."
+                });
+            }
+
+            const reportsData = XLSX.utils.sheet_to_json(workbook.Sheets["ServiceReport"]);
+            const reportIndex = reportsData.findLastIndex(
+                report => String(report["Ticket ID"] || "").trim() === String(ticketId).trim()
+            );
+
+            if (reportIndex === -1) {
+                return res.status(404).json({
+                    message: "No service report found for this ticket."
+                });
+            }
+
+            reportsData.splice(reportIndex, 1);
+            workbook.Sheets["ServiceReport"] = XLSX.utils.json_to_sheet(reportsData);
+            writeWorkbook(workbook);
+
+            res.json({
+                message: "Service report deleted successfully."
+            });
+
+        } catch (error) {
+            console.error("Delete service report error:", error);
+            res.status(500).json({
+                message: "Unable to delete service report."
+            });
+        }
     }
 );
 

@@ -346,7 +346,7 @@
 
                 <div class="info-row">
                     <div class="info-label">
-                        Created Date
+                        Created
                     </div>
                     <div
                         class="info-value"
@@ -359,12 +359,12 @@
                 <div class="button-group" style="margin-top: 20px;">
 
                     <button
+                        id="serviceReportActionButton"
                         class="button"
                         type="button"
                         style="background: #0284c7; color: white;"
-                        onclick="viewSavedReport()"
                     >
-                        View Service Report
+                        Loading...
                     </button>
 
                 </div>
@@ -530,10 +530,70 @@
                     </tr>
                 </table>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
                 <button type="button" class="button" style="background: #1769aa; color: white;" onclick="window.print()">Print / Save PDF</button>
-                <button type="button" class="button" style="background: #e5e7eb; color: #374151;" onclick="document.getElementById('reportModal').style.display='none'">Close</button>
+                <button type="button" class="button" style="background: #dbeafe; color: #1e3a8a;" onclick="openEditServiceReportForm()">Edit</button>
+                <button type="button" class="button" style="background: #ef4444; color: white;" onclick="deleteCurrentServiceReport()">Delete</button>
+                <button type="button" class="button" style="background: #e5e7eb; color: #374151;" onclick="closeServiceReportModal()">Close</button>
             </div>
+        </div>
+    </div>
+
+    <div
+        class="modal"
+        id="serviceReportFormModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 20px; z-index: 1100;"
+    >
+        <div style="background: white; max-width: 680px; width: 100%; border-radius: 12px; padding: 30px; max-height: 90vh; overflow-y: auto;">
+            <h2 id="serviceReportFormTitle" style="color: #1769aa; margin-bottom: 20px;">Create Service Report</h2>
+
+            <form id="serviceReportForm">
+                <div class="form-group">
+                    <label for="reportServiceMode">Service Mode</label>
+                    <select id="reportServiceMode">
+                        <option value="On-site">On-site</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Remote">Remote</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reportEngineer">Assigned Engineer</label>
+                    <select id="reportEngineer">
+                        <option value="">Unassigned</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reportDate">Service Date</label>
+                    <input id="reportDate" type="date" />
+                </div>
+
+                <div class="form-group">
+                    <label for="reportSignInTime">Sign In Time</label>
+                    <input id="reportSignInTime" type="time" />
+                </div>
+
+                <div class="form-group">
+                    <label for="reportSignOutTime">Sign Out Time</label>
+                    <input id="reportSignOutTime" type="time" />
+                </div>
+
+                <div class="form-group">
+                    <label for="reportTasksDone">Tasks Done</label>
+                    <textarea id="reportTasksDone" placeholder="Describe the work completed..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="reportResolution">Resolution</label>
+                    <textarea id="reportResolution" placeholder="Describe the final resolution..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; flex-wrap: wrap;">
+                    <button type="button" class="button" style="background: #e5e7eb; color: #374151;" onclick="closeServiceReportFormModal()">Cancel</button>
+                    <button id="serviceReportSubmitButton" type="submit" class="button" style="background: #1769aa; color: white;">Submit Service Report</button>
+                </div>
+            </form>
         </div>
     </div>
 

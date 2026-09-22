@@ -198,10 +198,10 @@ function validateAppointmentDateTime(appointmentDate, appointmentTime, now = new
     const sameDay = selectedDate.getTime() === currentDate.getTime();
 
     if (sameDay) {
-        const minimumAllowedStart = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+        const minimumAllowedStart = new Date(now.getTime() + (1 * 60 * 60 * 1000));
 
         if (selectedDateTime < minimumAllowedStart) {
-            return "Appointment must be at least 2 hours after the current time for same-day bookings.";
+            return "Appointment must be at least 1 hour after the current time for same-day bookings.";
         }
     }
 
@@ -985,7 +985,9 @@ async function loadTicketDetails() {
 
         setField(
             "appointmentDate",
-            ticket["Appointment Date"] || ticket.appointmentDate
+            formatDisplayDate(
+                ticket["Appointment Date"] || ticket.appointmentDate
+            )
         );
 
         setField(
@@ -993,9 +995,12 @@ async function loadTicketDetails() {
             ticket["Appointment Time"] || ticket.appointmentTime
         );
 
+        const createdTimestamp =
+            ticket["Created Date"] || ticket.createdDate || "";
+
         setField(
             "createdDate",
-            ticket["Created Date"] || ticket.createdDate
+            formatCreatedTimestamp(createdTimestamp)
         );
 
 
@@ -1044,6 +1049,7 @@ async function loadTicketDetails() {
 
         }
 
+        await refreshServiceReportButtonState();
 
     } catch (error) {
 
@@ -1062,18 +1068,84 @@ async function loadTicketDetails() {
 
 
 /* =========================================================
-   VIEW SAVED SERVICE REPORT
+   SERVICE REPORT FLOW
 ========================================================= */
 
+let currentServiceReport = null;
+let serviceReportFormMode = "create";
+
+function normalizeServiceMode(value) {
+    const normalized = String(value || "").trim();
+    const lowerValue = normalized.toLowerCase();
+
+    if (["on-site", "onsite", "on site", "yes", "yes (on-site)", "visit", "on-site visit"].includes(lowerValue)) {
+        return "On-site";
+    }
+
+    if (["remote", "remote support", "off-site", "offsite", "no"].includes(lowerValue)) {
+        return "Remote";
+    }
+
+    if (["hybrid", "hybrid support"].includes(lowerValue)) {
+        return "Hybrid";
+    }
+
+    return "On-site";
+}
+
+function getCurrentTicketId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("ticketId") || "";
+}
+
+async function fetchServiceReportsForTicket(ticketId) {
+    if (!ticketId) {
+        return [];
+    }
+
+    const response = await fetch(
+        `/api/tickets/${encodeURIComponent(ticketId)}/service-reports`
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to load service report.");
+    }
+
+    const reports = await response.json();
+    return Array.isArray(reports) ? reports : [];
+}
+
+async function refreshServiceReportButtonState() {
+    const button = document.getElementById("serviceReportActionButton");
+    const ticketId = getCurrentTicketId();
+
+    if (!button || !ticketId) {
+        return;
+    }
+
+    try {
+        const reports = await fetchServiceReportsForTicket(ticketId);
+        const report = reports.length > 0 ? reports[reports.length - 1] : null;
+
+        currentServiceReport = report;
+        button.textContent = report ? "View Service Report" : "Create Service Report";
+        button.onclick = () => {
+            if (report) {
+                viewSavedReport();
+            } else {
+                openCreateServiceReportForm();
+            }
+        };
+
+    } catch (error) {
+        console.error("Service report state error:", error);
+        button.textContent = "Create Service Report";
+        button.onclick = openCreateServiceReportForm;
+    }
+}
+
 async function viewSavedReport() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const ticketId =
-        params.get("ticketId");
+    const ticketId = getCurrentTicketId();
 
     if (!ticketId) {
         alert("Ticket ID not found.");
@@ -1081,162 +1153,331 @@ async function viewSavedReport() {
     }
 
     try {
-
-        const response =
-            await fetch(
-                `/api/tickets/${encodeURIComponent(ticketId)}/service-reports`
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Failed to load service report."
-            );
-        }
-
-        const reports =
-            await response.json();
+        const reports = await fetchServiceReportsForTicket(ticketId);
 
         if (!Array.isArray(reports) || reports.length === 0) {
-            alert(
-                "No service report has been created for this ticket yet."
-            );
+            openCreateServiceReportForm();
             return;
         }
 
-        const report =
-            reports[reports.length - 1];
+        const report = reports[reports.length - 1];
+        currentServiceReport = report;
 
-        const modal =
-            document.getElementById("reportModal");
+        const modal = document.getElementById("reportModal");
 
         if (!modal) {
             alert("Service report modal is unavailable.");
             return;
         }
 
-        const repTicketId =
-            document.getElementById("repTicketId");
-
-        const repCustomer =
-            document.getElementById("repCustomer");
-
-        const repEmail =
-            document.getElementById("repEmail");
-
-        const repIssue =
-            document.getElementById("repIssue");
-
-        const repSupportType =
-            document.getElementById("repSupportType");
-
-        const repEngineer =
-            document.getElementById("repEngineer");
-
-        const repEngineerLabel =
-            document.getElementById("repEngineerLabel");
-
-        const repOnsite =
-            document.getElementById("repOnsite");
-
-        const repDate =
-            document.getElementById("repDate");
-
-        const repTime =
-            document.getElementById("repTime");
-
-        const repHours =
-            document.getElementById("repHours");
-
-        const repTasks =
-            document.getElementById("repTasks");
-
-        const repResolution =
-            document.getElementById("repResolution");
+        const repTicketId = document.getElementById("repTicketId");
+        const repCustomer = document.getElementById("repCustomer");
+        const repEmail = document.getElementById("repEmail");
+        const repIssue = document.getElementById("repIssue");
+        const repSupportType = document.getElementById("repSupportType");
+        const repEngineer = document.getElementById("repEngineer");
+        const repEngineerLabel = document.getElementById("repEngineerLabel");
+        const repOnsite = document.getElementById("repOnsite");
+        const repDate = document.getElementById("repDate");
+        const repTime = document.getElementById("repTime");
+        const repHours = document.getElementById("repHours");
+        const repTasks = document.getElementById("repTasks");
+        const repResolution = document.getElementById("repResolution");
 
         if (repTicketId) {
-            repTicketId.textContent =
-                report["Ticket ID"] || ticketId;
+            repTicketId.textContent = report["Ticket ID"] || ticketId;
         }
 
         if (repCustomer) {
-            repCustomer.textContent =
-                `${report["Customer Name"] || ""} (${report["Customer ID"] || ""})`;
+            repCustomer.textContent = `${report["Customer Name"] || ""} (${report["Customer ID"] || ""})`;
         }
 
         if (repEmail) {
-            repEmail.textContent =
-                report.Email || report["Customer Email"] || "-";
+            repEmail.textContent = report.Email || report["Customer Email"] || "-";
         }
 
         if (repIssue) {
-            repIssue.textContent =
-                report.Issue || report["Reported Issue"] || "-";
+            repIssue.textContent = report.Issue || report["Reported Issue"] || "-";
         }
 
         if (repSupportType) {
-            repSupportType.textContent =
-                report["Support Type"] || report.supportType || "-";
+            repSupportType.textContent = report["Support Type"] || report.supportType || "-";
         }
 
         if (repEngineerLabel) {
-            repEngineerLabel.textContent =
-                getAssignmentRoleLabel(
-                    report["Support Type"] || report.supportType || ""
-                );
+            repEngineerLabel.textContent = getAssignmentRoleLabel(report["Support Type"] || report.supportType || "");
         }
 
         if (repEngineer) {
-            repEngineer.textContent =
-                report.Engineer || report["Assigned Engineer"] || "-";
+            repEngineer.textContent = report.Engineer || report["Assigned Engineer"] || "-";
         }
 
         if (repOnsite) {
-            repOnsite.textContent =
-                report.Onsite === "Yes"
-                    ? "On-site Support"
-                    : "Remote / Off-site";
+            repOnsite.textContent = normalizeServiceMode(report.ServiceMode || report.Onsite || report["Service Mode"] || "");
         }
 
         if (repDate) {
-            repDate.textContent =
-                report.Date || "-";
+            repDate.textContent = formatDisplayDate(report.Date) || "-";
         }
 
         if (repTime) {
-            repTime.textContent =
-                `${report.SignInTime || "-"} to ${report.SignOutTime || "-"}`;
+            repTime.textContent = `${report.SignInTime || "-"} to ${report.SignOutTime || "-"}`;
         }
 
         if (repHours) {
-            repHours.textContent =
-                `${report.HoursSpent || 0} Hours`;
+            repHours.textContent = `${report.HoursSpent || 0} Hours`;
         }
 
         if (repTasks) {
-            repTasks.textContent =
-                report.TasksDone || "-";
+            repTasks.textContent = report.TasksDone || "-";
         }
 
         if (repResolution) {
-            repResolution.textContent =
-                report.Resolution || "-";
+            repResolution.textContent = report.Resolution || "-";
         }
 
         modal.style.display = "flex";
 
     } catch (error) {
+        console.error("Failed to load report:", error);
+        alert("Error loading service report.");
+    }
+}
 
-        console.error(
-            "Failed to load report:",
-            error
-        );
+function closeServiceReportModal() {
+    const modal = document.getElementById("reportModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
 
-        alert(
-            "Error loading service report."
-        );
+function closeServiceReportFormModal() {
+    const modal = document.getElementById("serviceReportFormModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
 
+async function populateServiceReportEngineerOptions(currentEngineer = "") {
+    const select = document.getElementById("reportEngineer");
+
+    if (!select) {
+        return;
     }
 
+    try {
+        const response = await fetch("/api/staff");
+
+        if (!response.ok) {
+            throw new Error("Failed to load staff.");
+        }
+
+        const staff = await response.json();
+        select.innerHTML = '<option value="">Unassigned</option>';
+
+        staff.forEach(person => {
+            const option = document.createElement("option");
+            option.value = person.name;
+            option.textContent = person.name;
+
+            if (person.name === currentEngineer) {
+                option.selected = true;
+            }
+
+            select.appendChild(option);
+        });
+
+        if (currentEngineer) {
+            select.value = currentEngineer;
+        }
+
+    } catch (error) {
+        console.error("Error loading report engineers:", error);
+    }
+}
+
+function getServiceReportDefaults() {
+    const today = new Date().toISOString().split("T")[0];
+    const ticketAssignedEngineer = document.getElementById("assignedEngineer")?.value || "";
+    const supportType = document.getElementById("supportType")?.textContent || "";
+    const inferredMode = String(supportType).trim().toLowerCase() === "on-site support"
+        ? "On-site"
+        : "Remote";
+
+    return {
+        date: today,
+        engineer: ticketAssignedEngineer,
+        serviceMode: inferredMode
+    };
+}
+
+async function openCreateServiceReportForm() {
+    const ticketId = getCurrentTicketId();
+
+    if (!ticketId) {
+        alert("Ticket ID not found.");
+        return;
+    }
+
+    serviceReportFormMode = "create";
+    currentServiceReport = null;
+
+    const form = document.getElementById("serviceReportForm");
+    const modal = document.getElementById("serviceReportFormModal");
+    const title = document.getElementById("serviceReportFormTitle");
+    const submitButton = document.getElementById("serviceReportSubmitButton");
+
+    if (!form || !modal || !title || !submitButton) {
+        alert("Service report form is unavailable.");
+        return;
+    }
+
+    form.reset();
+    title.textContent = "Create Service Report";
+    submitButton.textContent = "Submit Service Report";
+
+    const defaults = getServiceReportDefaults();
+    document.getElementById("reportServiceMode").value = defaults.serviceMode;
+    document.getElementById("reportDate").value = defaults.date;
+    await populateServiceReportEngineerOptions(defaults.engineer);
+
+    modal.style.display = "flex";
+}
+
+async function openEditServiceReportForm() {
+    if (!currentServiceReport) {
+        alert("No service report is selected.");
+        return;
+    }
+
+    serviceReportFormMode = "edit";
+
+    const form = document.getElementById("serviceReportForm");
+    const modal = document.getElementById("serviceReportFormModal");
+    const title = document.getElementById("serviceReportFormTitle");
+    const submitButton = document.getElementById("serviceReportSubmitButton");
+
+    if (!form || !modal || !title || !submitButton) {
+        alert("Service report form is unavailable.");
+        return;
+    }
+
+    form.reset();
+    title.textContent = "Edit Service Report";
+    submitButton.textContent = "Save Changes";
+
+    document.getElementById("reportServiceMode").value = normalizeServiceMode(currentServiceReport.ServiceMode || currentServiceReport.Onsite || currentServiceReport["Service Mode"] || "");
+    document.getElementById("reportDate").value = currentServiceReport.Date || new Date().toISOString().split("T")[0];
+    document.getElementById("reportSignInTime").value = currentServiceReport.SignInTime || "";
+    document.getElementById("reportSignOutTime").value = currentServiceReport.SignOutTime || "";
+    document.getElementById("reportTasksDone").value = currentServiceReport.TasksDone || "";
+    document.getElementById("reportResolution").value = currentServiceReport.Resolution || "";
+
+    await populateServiceReportEngineerOptions(currentServiceReport.Engineer || currentServiceReport["Assigned Engineer"] || "");
+
+    closeServiceReportModal();
+    modal.style.display = "flex";
+}
+
+async function submitServiceReportForm(event) {
+    event.preventDefault();
+
+    const ticketId = getCurrentTicketId();
+
+    if (!ticketId) {
+        alert("Ticket ID not found.");
+        return;
+    }
+
+    const serviceMode = document.getElementById("reportServiceMode").value || "On-site";
+    const payload = {
+        serviceMode,
+        onsite: serviceMode === "On-site" || serviceMode === "Hybrid",
+        engineer: document.getElementById("reportEngineer").value || "",
+        date: document.getElementById("reportDate").value || "",
+        signInTime: document.getElementById("reportSignInTime").value || "",
+        signOutTime: document.getElementById("reportSignOutTime").value || "",
+        tasksDone: document.getElementById("reportTasksDone").value.trim(),
+        resolution: document.getElementById("reportResolution").value.trim()
+    };
+
+    if (!payload.date) {
+        alert("Please select a service date.");
+        return;
+    }
+
+    const method = serviceReportFormMode === "edit" ? "PUT" : "POST";
+    const endpoint = `/api/tickets/${encodeURIComponent(ticketId)}/service-report`;
+
+    try {
+        const response = await fetch(endpoint, {
+            method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Unable to save the service report.");
+        }
+
+        closeServiceReportFormModal();
+        await refreshServiceReportButtonState();
+        await viewSavedReport();
+        alert(data.message || "Service report saved successfully.");
+
+    } catch (error) {
+        console.error("Service report save error:", error);
+        alert(error.message || "Unable to save the service report.");
+    }
+}
+
+async function deleteCurrentServiceReport() {
+    const ticketId = getCurrentTicketId();
+
+    if (!ticketId) {
+        alert("Ticket ID not found.");
+        return;
+    }
+
+    if (!currentServiceReport) {
+        alert("No service report is available to delete.");
+        return;
+    }
+
+    const confirmed = window.confirm("Delete this service report?");
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/tickets/${encodeURIComponent(ticketId)}/service-report`, {
+            method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Unable to delete the service report.");
+        }
+
+        closeServiceReportModal();
+        currentServiceReport = null;
+        await refreshServiceReportButtonState();
+        alert(data.message || "Service report deleted successfully.");
+
+    } catch (error) {
+        console.error("Delete service report error:", error);
+        alert(error.message || "Unable to delete the service report.");
+    }
+}
+
+const serviceReportForm = document.getElementById("serviceReportForm");
+if (serviceReportForm) {
+    serviceReportForm.addEventListener("submit", submitServiceReportForm);
 }
 
 
@@ -1369,6 +1610,62 @@ function setField(id, value) {
             value ?? "";
 
     }
+
+}
+
+
+function formatDisplayDate(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    if (typeof value === "string" && /^\d{2}-\d{2}-\d{4}$/.test(value.trim())) {
+        return value.trim();
+    }
+
+    const dateOnly = typeof value === "string" ? value.trim() : "";
+    const isoMatch = dateOnly.match(/^\d{4}-\d{2}-\d{2}$/);
+    const parsedDate = isoMatch
+        ? new Date(Date.UTC(
+            Number(isoMatch[0].slice(0, 4)),
+            Number(isoMatch[0].slice(5, 7)) - 1,
+            Number(isoMatch[0].slice(8, 10))
+        ))
+        : new Date(value);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+        return String(value);
+    }
+
+    const day = String(parsedDate.getUTCDate()).padStart(2, "0");
+    const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+    const year = parsedDate.getUTCFullYear();
+
+    return `${day}-${month}-${year}`;
+
+}
+
+
+function formatCreatedTimestamp(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const parsedDate = new Date(value);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+        return String(value);
+    }
+
+    const day = String(parsedDate.getUTCDate()).padStart(2, "0");
+    const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+    const year = parsedDate.getUTCFullYear();
+    const hours = String(parsedDate.getUTCHours()).padStart(2, "0");
+    const minutes = String(parsedDate.getUTCMinutes()).padStart(2, "0");
+
+    return `${day}-${month}-${year} | ${hours}:${minutes}`;
 
 }
 
