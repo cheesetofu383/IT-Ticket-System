@@ -734,48 +734,146 @@ async function loadStaffDashboard() {
 
         tickets.forEach(ticket => {
 
+            const ticketId =
+                ticket["Ticket ID"] || ticket.ticketId || "";
+
             const row =
                 document.createElement("tr");
 
+            row.className = "ticket-row";
+            row.dataset.ticketId = ticketId;
 
-            row.innerHTML = `
+            const ticketIdCell =
+                document.createElement("td");
 
-                <td>
-                    <a href="/ticket-details.html?ticketId=${encodeURIComponent(
-                        ticket["Ticket ID"] || ticket.ticketId
-                    )}">
-                        ${ticket["Ticket ID"] || ticket.ticketId || ""}
-                    </a>
-                </td>
+            ticketIdCell.className = "ticket-id-cell";
+            ticketIdCell.textContent = ticketId;
 
-                <td>
-                    ${ticket["Customer Name"] || ticket.customerName || ""}
-                </td>
+            const customerCell =
+                document.createElement("td");
+            customerCell.textContent =
+                ticket["Customer Name"] || ticket.customerName || "";
 
-                <td>
-                    ${ticket.Issue || ticket.issue || ""}
-                </td>
+            const issueCell =
+                document.createElement("td");
+            issueCell.textContent =
+                ticket.Issue || ticket.issue || "";
 
-                <td>
-                    ${ticket["Support Type"] || ticket.supportType || ""}
-                </td>
+            const supportTypeCell =
+                document.createElement("td");
+            supportTypeCell.textContent =
+                ticket["Support Type"] || ticket.supportType || "";
 
-                <td>
-                    ${ticket.Status || ticket.status || ""}
-                </td>
+            const statusCell =
+                document.createElement("td");
+            statusCell.textContent =
+                ticket.Status || ticket.status || "";
 
-                <td>
-                    <a
-                        href="/ticket-details.html?ticketId=${encodeURIComponent(
-                            ticket["Ticket ID"] || ticket.ticketId
-                        )}"
-                        class="edit-ticket-btn"
-                    >
-                        Edit
-                    </a>
-                </td>
+            const actionCell =
+                document.createElement("td");
 
-            `;
+            const deleteButton =
+                document.createElement("button");
+
+            deleteButton.type = "button";
+            deleteButton.className = "delete-ticket-btn";
+            deleteButton.textContent = "Delete";
+
+            deleteButton.addEventListener("click", async event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (!ticketId) {
+                    alert("Ticket ID not found.");
+                    return;
+                }
+
+                const confirmed =
+                    window.confirm(
+                        "Are you sure you want to delete this ticket?"
+                    );
+
+                if (!confirmed) {
+                    return;
+                }
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/api/tickets/${encodeURIComponent(ticketId)}`,
+                            {
+                                method: "DELETE"
+                            }
+                        );
+
+                    const result =
+                        await response.json();
+
+                    if (response.ok) {
+                        const refundMessage =
+                            result.refundApplied
+                                ? `Customer refunded ${result.refundedCredits ?? 0} credit(s).`
+                                : "";
+
+                        const successMessage =
+                            result.message ||
+                            "Ticket deleted successfully.";
+
+                        alert(
+                            refundMessage
+                                ? `${successMessage}\n${refundMessage}`
+                                : successMessage
+                        );
+
+                        location.reload();
+
+                    } else {
+
+                        alert(
+                            result.message ||
+                            "Failed to delete ticket."
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Delete ticket error:",
+                        error
+                    );
+
+                    alert(
+                        "Unable to connect to the server."
+                    );
+
+                }
+            });
+
+            actionCell.appendChild(deleteButton);
+
+            row.append(
+                ticketIdCell,
+                customerCell,
+                issueCell,
+                supportTypeCell,
+                statusCell,
+                actionCell
+            );
+
+            row.addEventListener("click", event => {
+                if (event.target.closest("button")) {
+                    return;
+                }
+
+                if (!ticketId) {
+                    return;
+                }
+
+                window.location.href =
+                    `/ticket-details.html?ticketId=${encodeURIComponent(ticketId)}`;
+            });
 
             ticketTableBody.appendChild(row);
 

@@ -491,17 +491,37 @@ a:hover {
     background: #1d4ed8;
     transform: translateY(-1px);
 }
-.edit-ticket-btn {
-    display: inline-block;
-    padding: 7px 14px;
-    background: #2563eb;
-    color: white !important;
-    border-radius: 6px;
-    text-decoration: none !important;
-    font-size: 13px;
-    font-weight: 600;
+.ticket-row {
+    cursor: pointer;
 }
 
-.edit-ticket-btn:hover {
-    background: #1d4ed8;
+.ticket-row:hover {
+    background-color: #f8fafc;
+}
+
+.ticket-id-cell {
+    color: #6b7280;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.delete-ticket-btn {
+    display: inline-block;
+    padding: 7px 14px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.delete-ticket-btn:hover {
+    background: #b91c1c;
+}
+
+.delete-ticket-btn:focus {
+    outline: 2px solid rgba(220, 38, 38, 0.35);
+    outline-offset: 2px;
 }
